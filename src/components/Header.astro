@@ -14,7 +14,7 @@ const logoHeight = 56;
 const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
 ---
 
-<header class="site-header page-grid">
+<header id="top" class="site-header page-grid">
   <div class="bar">
     <a class="logo" href="/">
       <Picture
@@ -55,8 +55,9 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
   }
   .bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--s-4);
+    gap: var(--s-3) var(--s-4);
   }
   .logo {
     display: block;
@@ -121,8 +122,10 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
     font-weight: 600;
     text-decoration: none;
   }
-  .menu-panel a:hover {
-    text-decoration: underline;
+  @media (hover: hover) {
+    .menu-panel a:hover {
+      text-decoration: underline;
+    }
   }
 
   @media (min-width: 48em) {
@@ -152,9 +155,11 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
       font-size: var(--fs-16);
       text-decoration: none;
     }
-    .nav-wide a:hover {
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
+    @media (hover: hover) {
+      .nav-wide a:hover {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+      }
     }
     .cta {
       margin-inline-start: var(--s-3);

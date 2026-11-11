@@ -1,6 +1,8 @@
 {
-  "title": "ScoutIQ | Websites, apps and data tools for leagues, tours and clubs",
-  "description": "ScoutIQ is a small studio in Oshkosh, Wisconsin that builds websites, apps and data tools for people who run leagues, tours, clubs and small businesses.",
+  "title": "ScoutIQ | Websites and apps, built around how you work",
+  "description": "ScoutIQ is a small studio in Oshkosh, Wisconsin that builds websites, apps and data tools for businesses, clubs, leagues and startups.",
+  "siteName": "ScoutIQ",
+  "socialImageAlt": "ScoutIQ. You run it. We build what it runs on.",
   "skipLink": "Skip to content",
   "logoAlt": "ScoutIQ",
   "nav": [
@@ -10,5 +12,18 @@
   ],
   "headerButton": "Email us",
   "menuLabel": "Menu",
-  "clientSignIn": "Client sign in"
+  "clientSignIn": "Client sign in",
+  "footer": {
+    "place": "ScoutIQ LLC, Oshkosh, Wisconsin",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "backToTop": "Back to top",
+    "copyright": "Copyright 2026 ScoutIQ LLC"
+  },
+  "notFound": {
+    "title": "That page is not here. | ScoutIQ",
+    "heading": "That page is not here.",
+    "body": "The page you asked for does not exist.",
+    "link": "Go to the home page"
+  }
 }

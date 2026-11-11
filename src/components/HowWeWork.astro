@@ -1,0 +1,66 @@
+---
+// How we work: four commitments. A row of four on desktop, two by two on a tablet,
+// stacked on a phone. No boxes, no numbers.
+import home from '../copy/home.json';
+const copy = home.howWeWork;
+---
+
+<section id="how-we-work" class="section ground-chalk" aria-labelledby="how-we-work-title">
+  <div class="page-grid">
+    <h2 id="how-we-work-title">{copy.heading}</h2>
+    <ul class="promises">
+      {
+        copy.items.map((item) => (
+          <li>
+            <h3>{item.statement}</h3>
+            <p>{item.detail}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  h2 {
+    margin-bottom: var(--s-7);
+    font-size: var(--fs-48);
+  }
+  .promises {
+    display: grid;
+    gap: var(--s-7);
+    padding: 0;
+    list-style: none;
+  }
+  h3 {
+    margin-bottom: var(--s-3);
+    font-size: var(--fs-36);
+  }
+  p {
+    max-width: 34ch;
+  }
+
+  @media (min-width: 48em) {
+    h2 {
+      font-size: var(--fs-72);
+    }
+    .promises {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-7) var(--gap);
+    }
+    h3 {
+      font-size: var(--fs-48);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .promises {
+      grid-template-columns: subgrid;
+      row-gap: 0;
+    }
+    .promises li {
+      grid-column: span 3;
+      padding-inline-end: var(--s-4);
+    }
+  }
+</style>

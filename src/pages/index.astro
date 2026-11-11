@@ -1,7 +1,18 @@
 ---
-import HomePage from '../components/HomePage.astro';
-import settings from '../settings.json';
-const ground = settings.heroGround === 'B' ? 'B' : 'A';
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import WhatWeBuild from '../components/WhatWeBuild.astro';
+import HowWeWork from '../components/HowWeWork.astro';
+import Products from '../components/Products.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
 ---
 
-<HomePage ground={ground} />
+<Base>
+  <Hero />
+  <WhatWeBuild />
+  <HowWeWork />
+  <Products />
+  <About />
+  <Contact />
+</Base>

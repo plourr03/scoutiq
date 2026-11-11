@@ -1,62 +1,175 @@
 {
   "hero": {
-    "headline": ["You run the league.", "We build what it runs on."],
-    "supporting": "ScoutIQ makes websites, apps and data tools for people who run leagues, tours, clubs and small businesses.",
+    "headline": ["You run it.", "We build what it runs on."],
+    "supporting": "ScoutIQ builds websites and apps for businesses, clubs, leagues and anyone else with something to run.",
     "button": "Email us about your project",
     "link": { "label": "See what we build", "href": "#what-we-build" },
     "sheetLabel": "Your spreadsheet",
-    "phoneLabel": "Their phone",
-    "screenTitle": "Standings",
-    "caption": "A sample league. Change a score and watch the standings move.",
-    "columns": { "player": "Player", "points": "Points" },
-    "players": [
-      { "name": "Avery K.", "points": 24 },
-      { "name": "Jordan M.", "points": 22 },
-      { "name": "Sam R.", "points": 21 },
-      { "name": "Riley T.", "points": 19 },
-      { "name": "Casey B.", "points": 17 }
-    ],
-    "accessibility": {
-      "addPoint": "Add a point for {name}",
-      "removePoint": "Remove a point from {name}",
-      "pointsUnit": "points",
-      "movesUp": "{name} moves up to {place}.",
-      "movesDown": "{name} moves down to {place}.",
-      "places": ["first", "second", "third", "fourth", "fifth"]
+    "phoneLabel": "Their phone"
+  },
+  "demo": {
+    "tabsLabel": "Examples",
+    "shop": {
+      "tab": "Shop",
+      "caption": "A sample shop. Mark something sold out and watch the phone change.",
+      "screenTitle": "Shop",
+      "columns": { "item": "Item", "price": "Price", "inStock": "In stock" },
+      "yes": "Yes",
+      "no": "No",
+      "soldOut": "Sold out",
+      "strip": "{n} of {total} in stock",
+      "items": [
+        { "name": "House blend, 12 oz", "price": "$14" },
+        { "name": "Pour-over kit", "price": "$32" },
+        { "name": "Travel mug", "price": "$18" },
+        { "name": "Gift card", "price": "$25" },
+        { "name": "Cold brew, 32 oz", "price": "$9" }
+      ],
+      "autoSoldOut": "Travel mug",
+      "accessibility": {
+        "markSoldOut": "Mark {name} as sold out",
+        "markInStock": "Mark {name} as in stock",
+        "nowSoldOut": "{name} is now sold out.",
+        "nowInStock": "{name} is now in stock."
+      }
+    },
+    "bookings": {
+      "tab": "Bookings",
+      "caption": "A sample day. Book a time and it leaves the phone.",
+      "screenTitle": "Book a time",
+      "columns": { "time": "Time", "name": "Name", "status": "Status" },
+      "open": "Open",
+      "booked": "Booked",
+      "newBooking": "New booking",
+      "strip": {
+        "many": "{n} times open today",
+        "one": "{n} time open today",
+        "none": "Fully booked today."
+      },
+      "slots": [
+        { "time": "9:00 am", "name": "Dana P.", "booked": true },
+        { "time": "10:00 am", "name": "", "booked": false },
+        { "time": "11:00 am", "name": "Lee W.", "booked": true },
+        { "time": "1:00 pm", "name": "", "booked": false },
+        { "time": "2:00 pm", "name": "", "booked": false }
+      ],
+      "accessibility": {
+        "markBooked": "Mark {time} as booked",
+        "markOpen": "Mark {time} as open",
+        "nowBooked": "{time} is now booked.",
+        "nowOpen": "{time} is now open."
+      }
+    },
+    "league": {
+      "tab": "League",
+      "caption": "A sample league. Change a score and watch the standings move.",
+      "screenTitle": "Standings",
+      "columns": { "player": "Player", "points": "Points" },
+      "players": [
+        { "name": "Avery K.", "points": 24 },
+        { "name": "Jordan M.", "points": 22 },
+        { "name": "Sam R.", "points": 21 },
+        { "name": "Riley T.", "points": 19 },
+        { "name": "Casey B.", "points": 17 }
+      ],
+      "accessibility": {
+        "addPoint": "Add a point for {name}",
+        "removePoint": "Remove a point from {name}",
+        "pointsUnit": "points",
+        "movesUp": "{name} moves up to {place}.",
+        "movesDown": "{name} moves down to {place}.",
+        "places": ["first", "second", "third", "fourth", "fifth"]
+      }
     }
   },
   "whatWeBuild": {
     "heading": "What we build",
-    "intro": "Most of the people we work with already run everything from a spreadsheet. We start there.",
+    "intro": "Tell us how you work today, spreadsheets and all. We build around it.",
     "rows": [
       {
-        "thing": "A website that loads fast on a phone.",
-        "detail": "Schedules, results, standings, rules and sponsors, on the screen your players actually use."
+        "thing": "Websites that load fast on a phone.",
+        "detail": "A clear home for what you do, on the screen your customers actually use."
       },
       {
-        "thing": "Sign-up and payment.",
-        "detail": "Players register and pay online in a minute. The money goes straight to your account, never through ours."
+        "thing": "Online stores and payments.",
+        "detail": "Sell products, tickets, sign-ups or memberships. The money goes straight to your account, never through ours."
       },
       {
-        "thing": "Live scoring and standings.",
-        "detail": "Scores go in during the event. Standings update on every phone."
+        "thing": "Booking and sign-up.",
+        "detail": "Appointments, classes, events and registrations, taken online at any hour."
       },
       {
-        "thing": "Player and member accounts.",
-        "detail": "Profiles and results that carry over from season to season."
+        "thing": "Customer and member accounts.",
+        "detail": "A private sign-in where people see their own orders, bookings and history."
+      },
+      {
+        "thing": "Apps for iPhone and Android.",
+        "detail": "When a website is not enough, we build the app and get it into the app stores."
       },
       {
         "thing": "Admin tools that start from your spreadsheet.",
         "detail": "Keep working in Google Sheets or Excel. Upload the file and the site updates."
       },
       {
-        "thing": "Event-day tools.",
-        "detail": "Check-in, pairings and start times in one place when the day gets busy."
+        "thing": "Live scores and standings.",
+        "detail": "For leagues, tours and clubs. Scores go in during the event and standings update on every phone."
       },
       {
-        "thing": "Data and analysis.",
-        "detail": "Rankings, ratings and forecasts, from a studio that publishes its own sports analytics."
+        "thing": "Dashboards and data.",
+        "detail": "Reports, rankings and forecasts built on your own numbers."
       }
     ]
+  },
+  "howWeWork": {
+    "heading": "How we work",
+    "items": [
+      {
+        "statement": "You own it.",
+        "detail": "Your domain, your content and your data are yours, whether or not you keep working with us."
+      },
+      {
+        "statement": "Costs in writing first.",
+        "detail": "You get a year-by-year estimate before any work starts."
+      },
+      {
+        "statement": "No markup on running costs.",
+        "detail": "Hosting, domains and card fees are billed to you by the provider, at cost."
+      },
+      {
+        "statement": "Reachable when it matters.",
+        "detail": "We are a call or a text away on your busiest days."
+      }
+    ]
+  },
+  "products": {
+    "heading": "Our own products",
+    "intro": "We build and run two products of our own. They are where we try things first.",
+    "items": [
+      {
+        "name": "Wolves to a T",
+        "description": "Independent Minnesota Timberwolves analysis, built on our own models.",
+        "button": "Read Wolves to a T",
+        "href": "https://wolvestoat.com/",
+        "image": "wolves-to-a-t",
+        "alt": "The Wolves to a T home page on a phone"
+      },
+      {
+        "name": "Settlers After Dark",
+        "description": "Game night, organized. Schedule nights, keep score and track who is really the best at the table.",
+        "button": "Open Settlers After Dark",
+        "href": "https://settlers-after-dark.com/",
+        "image": "settlers-after-dark",
+        "alt": "The Settlers After Dark home page on a phone"
+      }
+    ]
+  },
+  "about": {
+    "heading": "About ScoutIQ",
+    "body": "ScoutIQ is a small studio in Oshkosh, Wisconsin. We started in 2026 with two products of our own, then began building websites and apps for other people's businesses, clubs and leagues. The work draws on six years of professional data science and a background in web and mobile development."
+  },
+  "contact": {
+    "heading": "Tell us what you run.",
+    "sentence": "A shop, a service, a club, a league, an idea. Send a few lines about it and what is not working today, and we will write back.",
+    "button": "Email us"
   }
 }

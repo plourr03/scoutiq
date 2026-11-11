@@ -1,0 +1,8 @@
+---
+import LegalPage from '../layouts/LegalPage.astro';
+import { Content, frontmatter } from '../copy/legal/privacy.md';
+---
+
+<LegalPage title={frontmatter.title} lastUpdatedLabel={frontmatter.lastUpdatedLabel}>
+  <Content />
+</LegalPage>

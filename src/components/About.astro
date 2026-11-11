@@ -1,0 +1,40 @@
+---
+import home from '../copy/home.json';
+const copy = home.about;
+---
+
+<section id="about" class="section ground-chalk" aria-labelledby="about-title">
+  <div class="page-grid">
+    <h2 id="about-title">{copy.heading}</h2>
+    <p class="body">{copy.body}</p>
+  </div>
+</section>
+
+<style>
+  h2 {
+    margin-bottom: var(--s-5);
+    font-size: var(--fs-48);
+  }
+  .body {
+    max-width: var(--measure);
+    font-size: var(--fs-21);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 48em) {
+    h2 {
+      font-size: var(--fs-72);
+    }
+  }
+
+  @media (min-width: 64em) {
+    h2 {
+      grid-column: 2 / span 4;
+      margin-bottom: 0;
+    }
+    .body {
+      grid-column: 6 / span 7;
+      padding-top: var(--s-2);
+    }
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+// Our own products: a real phone-size screenshot in a phone frame, next to the name,
+// the sentence and a button. Screenshots are lazy loaded and sized for their slot.
+import { Picture } from 'astro:assets';
+import home from '../copy/home.json';
+import PhoneFrame from './PhoneFrame.astro';
+import wolves from '../assets/products/wolves-to-a-t.png';
+import settlers from '../assets/products/settlers-after-dark.png';
+
+const copy = home.products;
+const images: Record<string, ImageMetadata> = { 'wolves-to-a-t': wolves, 'settlers-after-dark': settlers };
+const screenWidth = 200; // CSS px of the screen inside the frame
+---
+
+<section id="products" class="section ground-cell" aria-labelledby="products-title">
+  <div class="page-grid">
+    <div class="head">
+      <h2 id="products-title">{copy.heading}</h2>
+      <p class="intro">{copy.intro}</p>
+    </div>
+    <ul class="products">
+      {
+        copy.items.map((item) => {
+          const image = images[item.image];
+          return (
+            <li class="product">
+              <div class="shot">
+                <PhoneFrame>
+                  <Picture
+                    src={image}
+                    alt={item.alt}
+                    width={screenWidth}
+                    height={Math.round((image.height / image.width) * screenWidth)}
+                    densities={[1, 2]}
+                    formats={['avif', 'webp']}
+                    fallbackFormat="jpg"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </PhoneFrame>
+              </div>
+              <div class="text">
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+                <a class="btn btn--secondary" href={item.href}>
+                  {item.button}
+                </a>
+              </div>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  h2 {
+    font-size: var(--fs-48);
+  }
+  .head {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: var(--s-7);
+  }
+  .intro {
+    max-width: 40ch;
+    font-size: var(--fs-21);
+    line-height: 1.45;
+  }
+  .products {
+    display: grid;
+    gap: var(--s-8);
+    padding: 0;
+    list-style: none;
+  }
+  .product {
+    display: grid;
+    gap: var(--s-5);
+    align-items: center;
+  }
+  .shot {
+    --phone-w: 13.75rem;
+    width: min(var(--phone-w), 100%);
+  }
+  .shot :global(img) {
+    width: 100%;
+    height: auto;
+  }
+  h3 {
+    margin-bottom: var(--s-3);
+    font-size: var(--fs-48);
+  }
+  .text p {
+    max-width: 34ch;
+    margin-bottom: var(--s-5);
+  }
+
+  @media (min-width: 30em) {
+    .product {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+  }
+
+  @media (min-width: 48em) {
+    h2 {
+      font-size: var(--fs-72);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .head {
+      grid-column: 2 / span 7;
+    }
+    .products {
+      grid-template-columns: subgrid;
+      column-gap: var(--gap);
+    }
+    .product {
+      grid-column: span 6;
+    }
+  }
+</style>

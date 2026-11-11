@@ -110,6 +110,10 @@
 }
 
 /* ---------- Base ---------- */
+[hidden] {
+  display: none !important;
+}
+
 *,
 *::before,
 *::after {
@@ -128,6 +132,9 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   background: var(--chalk);
   color: var(--charcoal);
@@ -157,6 +164,13 @@ dd {
   margin: 0;
 }
 
+/* Avoid a single word left alone on the last line of a paragraph. */
+p,
+dd,
+li {
+  text-wrap: pretty;
+}
+
 img,
 picture {
   display: block;
@@ -170,8 +184,10 @@ a {
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.2em;
 }
-a:hover {
-  text-decoration-thickness: 0.16em;
+@media (hover: hover) {
+  a:hover {
+    text-decoration-thickness: 0.16em;
+  }
 }
 
 button {
@@ -271,17 +287,21 @@ button {
   background: var(--charcoal);
   color: var(--chalk);
 }
-.btn--primary:hover {
-  background: var(--lime);
-  color: var(--charcoal);
+@media (hover: hover) {
+  .btn--primary:hover {
+    background: var(--lime);
+    color: var(--charcoal);
+  }
 }
 .btn--secondary {
   background: transparent;
   color: var(--charcoal);
 }
-.btn--secondary:hover {
-  background: var(--charcoal);
-  color: var(--chalk);
+@media (hover: hover) {
+  .btn--secondary:hover {
+    background: var(--charcoal);
+    color: var(--chalk);
+  }
 }
 .btn--large {
   min-height: 3.5rem;
@@ -295,4 +315,12 @@ button {
   align-items: center;
   min-height: var(--tap);
   font-weight: 600;
+}
+
+main {
+  flex: 1 0 auto;
+}
+/* The skip link moves focus to <main>; it needs no ring of its own. */
+main:focus {
+  outline: none;
 }

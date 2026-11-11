@@ -1,10 +1,13 @@
 ---
-// Page shell: head, skip link, header slot, main, footer slot.
+// Page shell for every page: head (title, description, canonical, social tags, icons),
+// skip link, header, main, footer.
 import '../styles/global.css';
 import leagueGothic from '../fonts/league-gothic-latin-400-normal.woff2?url';
 import franklin400 from '../fonts/libre-franklin-latin-400-normal.woff2?url';
 import franklin600 from '../fonts/libre-franklin-latin-600-normal.woff2?url';
 import site from '../copy/site.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
@@ -13,7 +16,9 @@ interface Props {
 }
 
 const { title = site.title, description = site.description, noindex = false } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
+const canonical = new URL(path === '' ? '/' : path, Astro.site).href;
+const socialImage = new URL('/og-image.png', Astro.site).href;
 ---
 
 <!doctype html>
@@ -23,9 +28,26 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta name="theme-color" content="#fafbf7" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.socialImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
     <link rel="preload" href={leagueGothic} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={franklin400} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={franklin600} as="font" type="font/woff2" crossorigin />
@@ -33,10 +55,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
   </head>
   <body>
     <a class="skip-link" href="#main">{site.skipLink}</a>
-    <slot name="header" />
+    <Header />
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <slot name="footer" />
+    <Footer />
   </body>
 </html>

@@ -1,0 +1,63 @@
+---
+// Contact: a full width Lime band. Only Charcoal type on Lime.
+import home from '../copy/home.json';
+import settings from '../settings.json';
+const copy = home.contact;
+const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(settings.contactSubject)}`;
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <div class="page-grid">
+    <div class="inner">
+      <h2 id="contact-title">{copy.heading}</h2>
+      <p class="sentence">{copy.sentence}</p>
+      <div class="actions">
+        <a class="btn btn--primary btn--large" href={mailto}>{copy.button}</a>
+        <p class="address">{settings.contactEmail}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-block: var(--section-space);
+    background: var(--lime);
+    color: var(--charcoal);
+  }
+  h2 {
+    margin-bottom: var(--s-5);
+    font-size: var(--fs-72);
+  }
+  .sentence {
+    max-width: 44ch;
+    margin-bottom: var(--s-6);
+    font-size: var(--fs-21);
+    line-height: 1.45;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4) var(--s-6);
+  }
+  /* Written out so it can be copied; one tap selects the whole address. */
+  .address {
+    font-size: var(--fs-21);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    user-select: all;
+  }
+
+  @media (min-width: 48em) {
+    h2 {
+      font-size: var(--fs-96);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .inner {
+      grid-column: 2 / span 9;
+    }
+  }
+</style>

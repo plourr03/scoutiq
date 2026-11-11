@@ -1,0 +1,84 @@
+---
+// Footer on Charcoal: dark-mode logo, place, legal links at a comfortable size,
+// a plain Back to top link and the copyright line.
+import { Picture } from 'astro:assets';
+import logo from '../assets/logo/scoutiq-logo-dark.png';
+import site from '../copy/site.json';
+
+const logoHeight = 56;
+const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
+const copy = site.footer;
+---
+
+<footer class="site-footer on-dark">
+  <div class="page-grid">
+    <div class="brand">
+      <Picture
+        src={logo}
+        alt={site.logoAlt}
+        width={logoWidth}
+        height={logoHeight}
+        densities={[1, 2]}
+        formats={['avif', 'webp']}
+        fallbackFormat="png"
+        loading="lazy"
+        decoding="async"
+      />
+      <p>{copy.place}</p>
+    </div>
+    <nav class="links" aria-label="Footer">
+      <ul>
+        <li><a href="/privacy">{copy.privacy}</a></li>
+        <li><a href="/terms">{copy.terms}</a></li>
+        <li><a href="#top">{copy.backToTop}</a></li>
+      </ul>
+    </nav>
+    <p class="copyright">{copy.copyright}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--s-8) var(--s-7);
+    background: var(--charcoal);
+    color: var(--chalk);
+  }
+  .brand {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: var(--s-6);
+  }
+  .brand :global(img) {
+    width: auto;
+    height: 3.5rem;
+  }
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--chalk);
+    font-size: var(--fs-18);
+  }
+  .copyright {
+    margin-top: var(--s-6);
+  }
+
+  @media (min-width: 64em) {
+    .brand {
+      grid-column: 2 / span 4;
+      margin-bottom: 0;
+    }
+    .links {
+      grid-column: 6 / span 3;
+    }
+    .copyright {
+      grid-column: 10 / span 4;
+      align-self: end;
+      margin-top: 0;
+    }
+  }
+</style>

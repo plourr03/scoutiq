@@ -1,0 +1,106 @@
+---
+title: Terms of Service
+lastUpdatedLabel: "Last Updated:"
+---
+
+## 1. Acceptance of Terms
+
+By accessing or using ScoutIQ LLC's website and services (collectively, the "Services"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use our Services. We reserve the right to modify these Terms at any time, and your continued use of the Services constitutes acceptance of any changes.
+
+## 2. Description of Services
+
+ScoutIQ LLC provides innovative technology solutions including game night management platforms, sports analytics publications, and professional consulting services. Our Services are subject to change or discontinuation at any time without notice.
+
+## 3. User Accounts
+
+To access certain features of our Services, you may be required to create an account. You agree to:
+
+- Provide accurate, current, and complete information
+- Maintain and promptly update your account information
+- Maintain the security of your password and account
+- Accept responsibility for all activities under your account
+- Notify us immediately of any unauthorized access or security breach
+- Be at least 13 years of age to create an account
+
+## 4. User Conduct
+
+You agree not to use the Services to:
+
+- Violate any applicable laws or regulations
+- Infringe upon intellectual property rights
+- Transmit harmful, offensive, or inappropriate content
+- Harass, abuse, or harm other users
+- Attempt to gain unauthorized access to our systems
+- Interfere with or disrupt the Services
+- Use automated systems to access the Services without permission
+- Collect or harvest information about other users
+- Impersonate any person or entity
+- Engage in fraudulent activities
+
+## 5. Intellectual Property Rights
+
+All content, features, and functionality of the Services, including but not limited to text, graphics, logos, icons, images, audio clips, video clips, data compilations, and software, are the exclusive property of ScoutIQ LLC and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+
+## 6. User-Generated Content
+
+You retain ownership of any content you submit, post, or display through the Services. By submitting content, you grant ScoutIQ LLC a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, adapt, publish, translate, create derivative works from, distribute, and display such content. You represent and warrant that you have all necessary rights to grant this license.
+
+## 7. Payment and Billing
+
+If you purchase any services or products through ScoutIQ LLC:
+
+- You agree to pay all fees and charges at the prices then in effect
+- All fees are non-refundable unless otherwise stated
+- You authorize us to charge your payment method for all fees
+- You are responsible for all taxes associated with your purchase
+- We reserve the right to change our pricing at any time
+- Failure to pay may result in suspension or termination of services
+
+## 8. Privacy and Data Protection
+
+Your use of the Services is also governed by our Privacy Policy. We collect, use, and protect your personal information in accordance with applicable data protection laws, including GDPR and CCPA.
+
+## 9. Third-Party Services and Links
+
+Our Services may contain links to third-party websites or services. We are not responsible for the content, accuracy, or practices of these external sites. Your interactions with third-party services are solely between you and the third party.
+
+## 10. Disclaimers and Limitation of Liability
+
+THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. SCOUTIQ LLC DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, SCOUTIQ LLC SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
+
+## 11. Indemnification
+
+You agree to defend, indemnify, and hold harmless ScoutIQ LLC, its affiliates, and their respective officers, directors, employees, and agents from any claims, liabilities, damages, losses, costs, or expenses (including reasonable attorneys' fees) arising out of or related to your use of the Services, violation of these Terms, or infringement of any rights of another party.
+
+## 12. Termination
+
+We reserve the right to suspend or terminate your access to the Services at any time, with or without cause, and with or without notice. Upon termination, your right to use the Services will immediately cease. All provisions of these Terms that by their nature should survive termination shall survive, including ownership provisions, warranty disclaimers, and limitations of liability.
+
+## 13. Dispute Resolution and Arbitration
+
+Any dispute arising out of or relating to these Terms or the Services shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association. The arbitration shall take place in the jurisdiction where ScoutIQ is headquartered. You waive any right to participate in a class action lawsuit or class-wide arbitration.
+
+## 14. Governing Law
+
+These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which ScoutIQ LLC is registered, without regard to its conflict of law provisions.
+
+## 15. Changes to Services
+
+We reserve the right to modify, suspend, or discontinue any part of the Services at any time without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the Services.
+
+## 16. Severability
+
+If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.
+
+## 17. Entire Agreement
+
+These Terms, together with our Privacy Policy and any other legal notices published by us, constitute the entire agreement between you and ScoutIQ LLC regarding the Services.
+
+## 18. Contact Information
+
+If you have any questions about these Terms, please contact us at:
+
+- Email: scoutiq12@gmail.com
+- Website: scout-iq.com

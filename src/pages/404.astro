@@ -1,0 +1,40 @@
+---
+// Firebase Hosting serves this file with a 404 status for any unknown address.
+import Base from '../layouts/Base.astro';
+import site from '../copy/site.json';
+const copy = site.notFound;
+---
+
+<Base title={copy.title} noindex>
+  <section class="not-found page-grid" aria-labelledby="not-found-title">
+    <div class="inner">
+      <h1 id="not-found-title">{copy.heading}</h1>
+      <p>{copy.body}</p>
+      <a class="text-link" href="/">{copy.link}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    padding-block: var(--s-8) var(--section-space);
+  }
+  h1 {
+    margin-bottom: var(--s-5);
+    font-size: var(--fs-72);
+  }
+  p {
+    margin-bottom: var(--s-4);
+    font-size: var(--fs-21);
+  }
+  @media (min-width: 48em) {
+    h1 {
+      font-size: var(--fs-96);
+    }
+  }
+  @media (min-width: 64em) {
+    .inner {
+      grid-column: 2 / span 8;
+    }
+  }
+</style>

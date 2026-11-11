@@ -12,5 +12,8 @@ export default defineConfig({
     // Small pages: keep CSS in the HTML so the first paint needs no extra request.
     inlineStylesheets: 'always',
   },
+  // Keep the legal text exactly as written: no curly quotes or dashes (smartypants),
+  // and no automatic links on the email address (GitHub-style autolinks).
+  markdown: { smartypants: false, gfm: false },
   devToolbar: { enabled: false },
 });

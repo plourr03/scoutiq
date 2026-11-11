@@ -1,0 +1,563 @@
+---
+// The hero demo: a spreadsheet with sheet tabs (Shop, Bookings, League) driving a phone.
+// Without JavaScript only the Shop example shows and the tabs are hidden.
+import home from '../copy/home.json';
+import PhoneFrame from './PhoneFrame.astro';
+
+const { hero, demo } = home;
+const { shop, bookings, league } = demo;
+
+const fill = (template: string, values: Record<string, string | number>) =>
+  template.replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ''));
+const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+const shopItems = shop.items.map((item) => ({ ...item, id: `shop-${slug(item.name)}` }));
+const slots = bookings.slots.map((slot) => ({ ...slot, id: `slot-${slug(slot.time)}` }));
+const openCount = slots.filter((s) => !s.booked).length;
+const bookingsStrip =
+  openCount === 0 ? bookings.strip.none : fill(openCount === 1 ? bookings.strip.one : bookings.strip.many, { n: openCount });
+const players = league.players.map((p) => ({ ...p, id: `player-${slug(p.name)}` }));
+// Highest first. Array.sort is stable, so ties keep their sheet order.
+const standings = [...players].sort((a, b) => b.points - a.points);
+
+const tabs = [
+  { key: 'shop', label: shop.tab, caption: shop.caption },
+  { key: 'bookings', label: bookings.tab, caption: bookings.caption },
+  { key: 'league', label: league.tab, caption: league.caption },
+];
+
+// Strings the script needs, passed as data (not code).
+const text = {
+  shop: {
+    yes: shop.yes,
+    no: shop.no,
+    strip: shop.strip,
+    autoSoldOut: shop.autoSoldOut,
+    ...shop.accessibility,
+  },
+  bookings: {
+    open: bookings.open,
+    booked: bookings.booked,
+    newBooking: bookings.newBooking,
+    strip: bookings.strip,
+    ...bookings.accessibility,
+  },
+  league: league.accessibility,
+};
+---
+
+<div class="demo" data-demo>
+  <script type="application/json" is:inline data-demo-text set:html={JSON.stringify(text)} />
+
+  <div class="demo-sheet">
+    <p class="label" id="sheet-label">{hero.sheetLabel}</p>
+    <div class="sheet-frame">
+      <!-- Shop -->
+      <div class="sheet-panel" role="tabpanel" id="sheet-shop" aria-labelledby="tab-shop" data-example="shop">
+        <div class="sheet-scroll">
+          <table class="sheet" aria-labelledby="sheet-label tab-shop">
+            <thead>
+              <tr class="letters" aria-hidden="true"><td class="corner"></td><td>A</td><td>B</td><td>C</td></tr>
+              <tr class="head">
+                <td class="num" aria-hidden="true">1</td>
+                <th scope="col">{shop.columns.item}</th>
+                <th scope="col">{shop.columns.price}</th>
+                <th scope="col">{shop.columns.inStock}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                shopItems.map((item, index) => (
+                  <tr data-row={item.id} data-name={item.name}>
+                    <td class="num" aria-hidden="true">{index + 2}</td>
+                    <th scope="row" class="wrap">{item.name}</th>
+                    <td>{item.price}</td>
+                    <td class="control-cell" data-cell>
+                      <span class="static">{shop.yes}</span>
+                      <button type="button" class="toggle" data-toggle aria-label={fill(shop.accessibility.markSoldOut, { name: item.name })}>
+                        {shop.yes}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bookings -->
+      <div class="sheet-panel" role="tabpanel" id="sheet-bookings" aria-labelledby="tab-bookings" data-example="bookings" hidden>
+        <div class="sheet-scroll">
+          <table class="sheet" aria-labelledby="sheet-label tab-bookings">
+            <thead>
+              <tr class="letters" aria-hidden="true"><td class="corner"></td><td>A</td><td>B</td><td>C</td></tr>
+              <tr class="head">
+                <td class="num" aria-hidden="true">1</td>
+                <th scope="col">{bookings.columns.time}</th>
+                <th scope="col">{bookings.columns.name}</th>
+                <th scope="col">{bookings.columns.status}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                slots.map((slot, index) => (
+                  <tr data-row={slot.id} data-time={slot.time} data-booked={String(slot.booked)}>
+                    <td class="num" aria-hidden="true">{index + 2}</td>
+                    <th scope="row">{slot.time}</th>
+                    <td class="wrap" data-name>{slot.name}</td>
+                    <td class="control-cell" data-cell>
+                      <button
+                        type="button"
+                        class="toggle"
+                        data-toggle
+                        aria-label={fill(slot.booked ? bookings.accessibility.markOpen : bookings.accessibility.markBooked, { time: slot.time })}
+                      >
+                        {slot.booked ? bookings.booked : bookings.open}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- League -->
+      <div class="sheet-panel" role="tabpanel" id="sheet-league" aria-labelledby="tab-league" data-example="league" hidden>
+        <div class="sheet-scroll">
+          <table class="sheet" aria-labelledby="sheet-label tab-league">
+            <thead>
+              <tr class="letters" aria-hidden="true"><td class="corner"></td><td>A</td><td>B</td></tr>
+              <tr class="head">
+                <td class="num" aria-hidden="true">1</td>
+                <th scope="col">{league.columns.player}</th>
+                <th scope="col">{league.columns.points}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                players.map((p, index) => (
+                  <tr data-row={p.id} data-name={p.name} data-points={p.points}>
+                    <td class="num" aria-hidden="true">{index + 2}</td>
+                    <th scope="row">{p.name}</th>
+                    <td class="points" data-cell>
+                      <div class="points-inner">
+                        <span class="value" data-value>{p.points}</span>
+                        <span class="steps">
+                          <button type="button" class="step" data-delta="-1" aria-label={fill(league.accessibility.removePoint, { name: p.name })}>
+                            <span aria-hidden="true">&#8722;</span>
+                          </button>
+                          <button type="button" class="step" data-delta="1" aria-label={fill(league.accessibility.addPoint, { name: p.name })}>
+                            <span aria-hidden="true">+</span>
+                          </button>
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sheet tabs, along the bottom like a real spreadsheet -->
+      <div class="tabbar">
+        <div class="tabs" role="tablist" aria-label={demo.tabsLabel}>
+          {
+            tabs.map((tab, index) => (
+              <button
+                type="button"
+                role="tab"
+                class="tab"
+                id={`tab-${tab.key}`}
+                aria-selected={index === 0 ? 'true' : 'false'}
+                aria-controls={`sheet-${tab.key} view-${tab.key}`}
+                tabindex={index === 0 ? '0' : '-1'}
+                data-caption={tab.caption}
+                data-key={tab.key}
+              >
+                {tab.label}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-phone">
+    <p class="label" id="phone-label">{hero.phoneLabel}</p>
+    <PhoneFrame labelledby="phone-label">
+      <div class="app" data-phone>
+        <span class="speaker" aria-hidden="true"></span>
+
+        <div class="view" id="view-shop" data-view="shop">
+          <p class="strip" data-strip>{fill(shop.strip, { n: shopItems.length, total: shopItems.length })}</p>
+          <p class="app-title" id="title-shop">{shop.screenTitle}</p>
+          <ul class="app-list" data-list aria-labelledby="title-shop">
+            {
+              shopItems.map((item) => (
+                <li class="app-row" data-row={item.id}>
+                  <span class="name">{item.name}</span>
+                  <span class="big price">{item.price}</span>
+                  <span class="sold-out">{shop.soldOut}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="view" id="view-bookings" data-view="bookings" hidden>
+          <p class="strip" data-strip>{bookingsStrip}</p>
+          <p class="app-title" id="title-bookings">{bookings.screenTitle}</p>
+          <ul class="app-list" data-list aria-labelledby="title-bookings">
+            {
+              slots.map((slot) => (
+                <li class="app-row" data-row={slot.id} hidden={slot.booked}>
+                  <span class="big time">{slot.time}</span>
+                  <span class="name end">{bookings.open}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="view" id="view-league" data-view="league" hidden>
+          <p class="app-title" id="title-league">{league.screenTitle}</p>
+          <ol class="app-list" data-list aria-labelledby="title-league">
+            {
+              standings.map((p, index) => (
+                <li class:list={['app-row', 'standing', { 'is-leader': index === 0 }]} data-row={p.id}>
+                  <span class="big pos" data-pos>{index + 1}</span>
+                  <span class="name">{p.name}</span>
+                  <span class="big pts">
+                    <span data-points>{p.points}</span>
+                    <span class="vh"> {league.accessibility.pointsUnit}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <span class="home-bar" aria-hidden="true"></span>
+      </div>
+    </PhoneFrame>
+  </div>
+
+  <p class="caption" data-caption-text>{shop.caption}</p>
+  <p class="vh" aria-live="polite" data-live></p>
+</div>
+
+<script>
+  import '../scripts/demo.js';
+</script>
+
+<style>
+  .demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--s-6) var(--s-7);
+  }
+  .demo-sheet {
+    flex: 1 1 19rem;
+    max-width: 27rem;
+    min-width: 0;
+  }
+  .demo-phone {
+    --phone-w: 17.5rem;
+    /* A definite width, so the phone is the same size on every tab. */
+    flex: 0 0 auto;
+    width: min(var(--phone-w), 100%);
+  }
+  .label {
+    margin-bottom: var(--s-3);
+    font-size: var(--fs-16);
+    font-weight: 600;
+  }
+  .caption {
+    flex-basis: 100%;
+    max-width: 44ch;
+    margin-top: calc(var(--s-2) * -1);
+    font-size: var(--fs-16);
+  }
+
+  /* ---------- Spreadsheet ---------- */
+  .sheet-scroll {
+    overflow-x: auto;
+  }
+  .sheet {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--chalk);
+    font-size: var(--fs-16);
+    line-height: 1.2;
+  }
+  .sheet th,
+  .sheet td {
+    height: 3.25rem;
+    padding: 0 var(--s-3);
+    border: 1px solid var(--line);
+    text-align: left;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .sheet .wrap {
+    white-space: normal;
+  }
+  @media (max-width: 29.99em) {
+    .sheet th,
+    .sheet td {
+      padding-inline: var(--s-2);
+    }
+    .toggle {
+      min-width: 3.5rem;
+    }
+  }
+  .sheet .letters td {
+    height: 2rem;
+    background: var(--cell);
+  }
+  .sheet .num,
+  .sheet .corner {
+    width: 2.25rem;
+    background: var(--cell);
+  }
+  .sheet .head th {
+    font-weight: 700;
+  }
+  .sheet .is-active {
+    outline: 2px solid var(--moss);
+    outline-offset: -2px;
+  }
+
+  /* Cell controls: shown only when the script runs. */
+  .control-cell {
+    width: 1%;
+    padding-inline: var(--s-1) !important;
+  }
+  .static {
+    padding-inline: var(--s-2);
+  }
+  .toggle,
+  .steps {
+    display: none;
+  }
+  :global(.js) .static {
+    display: none;
+  }
+  :global(.js) .toggle {
+    display: inline-flex;
+  }
+  :global(.js) .steps {
+    display: inline-flex;
+  }
+  .toggle {
+    align-items: center;
+    justify-content: center;
+    min-width: 4.25rem;
+    min-height: var(--tap);
+    padding: 0 var(--s-3);
+    border: 2px solid var(--charcoal);
+    border-radius: var(--radius-button);
+    background: var(--chalk);
+    font-size: var(--fs-16);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .toggle:hover {
+      background: var(--charcoal);
+      color: var(--chalk);
+    }
+  }
+
+  .sheet .points {
+    width: 1%;
+    padding-inline-end: var(--s-1);
+  }
+  .points-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .value {
+    min-width: 2ch;
+    text-align: right;
+  }
+  .steps {
+    gap: var(--s-1);
+  }
+  .step {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    padding: 0;
+    border: 2px solid var(--charcoal);
+    border-radius: var(--radius-button);
+    background: var(--chalk);
+    font-size: var(--fs-24);
+    line-height: 1;
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .step:hover {
+      background: var(--charcoal);
+      color: var(--chalk);
+    }
+  }
+  .step[aria-disabled='true'] {
+    border-color: var(--line);
+    color: var(--line);
+    background: var(--chalk);
+    cursor: not-allowed;
+  }
+
+  /* ---------- Sheet tabs ---------- */
+  .tabbar {
+    display: none;
+    padding: 0 var(--s-2) var(--s-2);
+    border: 1px solid var(--line);
+    border-top: 0;
+    background: var(--cell);
+  }
+  :global(.js) .tabbar {
+    display: block;
+  }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1);
+  }
+  .tab {
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 2px solid var(--charcoal);
+    border-top-width: 0;
+    border-radius: 0 0 var(--radius-button) var(--radius-button);
+    background: var(--chalk);
+    font-size: var(--fs-16);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .tab:hover {
+      background: var(--cell);
+    }
+  }
+  /* Selected: Charcoal fill plus an underlined, heavier label, so it reads without color. */
+  .tab[aria-selected='true'] {
+    background: var(--charcoal);
+    color: var(--chalk);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+
+  /* ---------- Phone app ---------- */
+  .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 30.5rem;
+    padding: var(--s-3);
+  }
+  .speaker,
+  .home-bar {
+    display: block;
+    height: 0.375rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: var(--charcoal);
+  }
+  .speaker {
+    flex: none;
+    width: 4.5rem;
+    margin-bottom: var(--s-4);
+  }
+  .home-bar {
+    flex: none;
+    width: 6rem;
+    margin-top: auto;
+  }
+  .view {
+    margin-bottom: var(--s-5);
+  }
+  .strip {
+    margin-bottom: var(--s-4);
+    padding: var(--s-2) var(--s-3);
+    border-radius: var(--radius-button);
+    background: var(--lime);
+    font-size: var(--fs-16);
+    font-weight: 600;
+  }
+  .app-title {
+    padding: 0 var(--s-2) var(--s-3);
+    font-family: var(--font-display);
+    font-size: var(--fs-48);
+    line-height: var(--lh-display);
+  }
+  .app-list {
+    display: grid;
+    gap: var(--s-1);
+    padding: 0;
+    list-style: none;
+  }
+  .app-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 3.25rem;
+    padding: 0 var(--s-2);
+    border-radius: var(--radius-button);
+    background: var(--app-white);
+  }
+  .app-row.standing {
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+  }
+  .app-row.is-leader {
+    background: var(--lime);
+  }
+  .big {
+    font-family: var(--font-display);
+    font-size: var(--fs-36);
+    line-height: 1;
+  }
+  .price,
+  .pts {
+    text-align: right;
+  }
+  .name {
+    overflow: hidden;
+    font-size: var(--fs-16);
+    font-weight: 600;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+  }
+  .name.end {
+    text-align: right;
+  }
+  .standing .name {
+    white-space: nowrap;
+  }
+  .sold-out {
+    display: none;
+    font-size: var(--fs-16);
+    font-weight: 600;
+  }
+  .app-row.is-sold-out .price {
+    display: none;
+  }
+  .app-row.is-sold-out .sold-out {
+    display: block;
+  }
+  .app-row.is-sold-out .name {
+    font-weight: 400;
+  }
+</style>

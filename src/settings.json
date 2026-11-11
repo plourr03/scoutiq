@@ -1,9 +1,9 @@
 {
   "contactEmail": "scoutiq12@gmail.com",
   "contactSubject": "Project inquiry",
-  "heroGround": "A",
+  "legalLastUpdated": "2026-11-11",
   "clientSignIn": {
     "enabled": false,
-    "href": "/client"
+    "href": "/clients"
   }
 }

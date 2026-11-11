@@ -1,0 +1,27 @@
+---
+// The phone frame used everywhere on the site: a solid Charcoal body with a 24 px radius
+// around a White app screen. Width comes from --phone-w on the parent.
+interface Props {
+  labelledby?: string;
+}
+const { labelledby } = Astro.props;
+---
+
+<div class="phone" role={labelledby ? 'group' : undefined} aria-labelledby={labelledby}>
+  <div class="screen"><slot /></div>
+</div>
+
+<style>
+  .phone {
+    width: min(var(--phone-w, 17.5rem), 100%);
+    padding: 0.625rem;
+    border-radius: var(--radius-phone);
+    background: var(--charcoal);
+  }
+  .screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-screen);
+    background: var(--app-white);
+  }
+</style>

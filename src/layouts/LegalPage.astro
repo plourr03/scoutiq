@@ -1,0 +1,89 @@
+---
+// Privacy Policy and Terms of Service: one clear title, the Last Updated line, then the text.
+import Base from './Base.astro';
+import site from '../copy/site.json';
+import settings from '../settings.json';
+
+interface Props {
+  title: string;
+  lastUpdatedLabel: string;
+}
+const { title, lastUpdatedLabel } = Astro.props;
+const lastUpdated = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+}).format(new Date(`${settings.legalLastUpdated}T00:00:00Z`));
+---
+
+<Base title={`${title} | ${site.siteName}`}>
+  <article class="legal page-grid" aria-labelledby="legal-title">
+    <header class="legal-head">
+      <h1 id="legal-title">{title}</h1>
+      <p class="updated">{lastUpdatedLabel} {lastUpdated}</p>
+    </header>
+    <div class="legal-body">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal {
+    padding-block: var(--s-7) var(--section-space);
+  }
+  .legal-head {
+    margin-bottom: var(--s-7);
+  }
+  h1 {
+    margin-bottom: var(--s-4);
+    font-size: var(--fs-72);
+  }
+  .updated {
+    font-size: var(--fs-16);
+  }
+  .legal-body {
+    max-width: var(--measure);
+    overflow-wrap: break-word;
+  }
+  .legal-body :global(h2) {
+    margin: var(--s-7) 0 var(--s-3);
+    font-size: var(--fs-36);
+  }
+  .legal-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .legal-body :global(h3) {
+    margin: var(--s-5) 0 var(--s-2);
+    font-family: var(--font-text);
+    font-size: var(--fs-21);
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .legal-body :global(p + p),
+  .legal-body :global(p + ul) {
+    margin-top: var(--s-3);
+  }
+  .legal-body :global(ul) {
+    padding-left: 1.25em;
+  }
+  .legal-body :global(li + li) {
+    margin-top: var(--s-2);
+  }
+
+  @media (min-width: 48em) {
+    .legal {
+      padding-top: var(--s-8);
+    }
+    h1 {
+      font-size: var(--fs-96);
+    }
+  }
+  @media (min-width: 64em) {
+    .legal-head,
+    .legal-body {
+      grid-column: 2 / span 8;
+    }
+  }
+</style>

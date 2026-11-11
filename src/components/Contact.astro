@@ -1,5 +1,6 @@
 ---
 // Contact: a full width Lime band. Only Charcoal type on Lime.
+// The address is plain text a person can select; with JavaScript a small button copies it.
 import home from '../copy/home.json';
 import settings from '../settings.json';
 const copy = home.contact;
@@ -13,11 +14,50 @@ const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(set
       <p class="sentence">{copy.sentence}</p>
       <div class="actions">
         <a class="btn btn--primary btn--large" href={mailto}>{copy.button}</a>
-        <p class="address">{settings.contactEmail}</p>
+        <div class="address-row">
+          <p class="address" data-address>{settings.contactEmail}</p>
+          <button type="button" class="btn btn--secondary copy" data-copy data-copied-label={copy.copiedButton}>
+            {copy.copyButton}
+          </button>
+        </div>
       </div>
+      <p class="vh" aria-live="polite" data-copy-status></p>
     </div>
   </div>
 </section>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const address = document.querySelector<HTMLElement>('[data-address]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  if (button && address && status) {
+    const label = button.textContent?.trim() ?? '';
+    const copied = button.dataset.copiedLabel ?? '';
+    let timer = 0;
+    button.addEventListener('click', async () => {
+      const value = address.textContent?.trim() ?? '';
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        // Older browsers: select the address and use the legacy copy command.
+        const range = document.createRange();
+        range.selectNodeContents(address);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        document.execCommand('copy');
+        selection?.removeAllRanges();
+      }
+      button.textContent = copied;
+      status.textContent = copied;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        button.textContent = label;
+        status.textContent = '';
+      }, 2000);
+    });
+  }
+</script>
 
 <style>
   .contact {
@@ -41,12 +81,26 @@ const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(set
     align-items: center;
     gap: var(--s-4) var(--s-6);
   }
-  /* Written out so it can be copied; one tap selects the whole address. */
+  .address-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-4);
+  }
+  /* Written out so it can be selected and copied by hand. */
   .address {
     font-size: var(--fs-21);
     font-weight: 600;
     overflow-wrap: anywhere;
     user-select: all;
+  }
+  /* The copy button only exists when the script runs. Kept a fixed width so the label swap does not shift it. */
+  .copy {
+    display: none;
+    min-width: 8.5rem;
+  }
+  :global(.js) .copy {
+    display: inline-flex;
   }
 
   @media (min-width: 48em) {

@@ -5,11 +5,12 @@ import { Picture } from 'astro:assets';
 import home from '../copy/home.json';
 import PhoneFrame from './PhoneFrame.astro';
 import wolves from '../assets/products/wolves-to-a-t.png';
-import settlers from '../assets/products/settlers-after-dark.png';
+import settlers from '../assets/products/settlers-after-dark-polls.png';
 
 const copy = home.products;
-const images: Record<string, ImageMetadata> = { 'wolves-to-a-t': wolves, 'settlers-after-dark': settlers };
-const screenWidth = 200; // CSS px of the screen inside the frame
+const images: Record<string, ImageMetadata> = { 'wolves-to-a-t': wolves, 'settlers-after-dark-polls': settlers };
+// Same frame and width as the hero phone: 17.5rem (280 px) outside, 260 px of screen.
+const screenWidth = 260;
 ---
 
 <section id="products" class="section ground-cell" aria-labelledby="products-title">
@@ -80,7 +81,7 @@ const screenWidth = 200; // CSS px of the screen inside the frame
     align-items: center;
   }
   .shot {
-    --phone-w: 13.75rem;
+    --phone-w: 17.5rem;
     width: min(var(--phone-w), 100%);
   }
   .shot :global(img) {
@@ -98,7 +99,8 @@ const screenWidth = 200; // CSS px of the screen inside the frame
 
   @media (min-width: 30em) {
     .product {
-      grid-template-columns: auto minmax(0, 1fr);
+      /* The phone column is the frame's width, whatever the image's own size. */
+      grid-template-columns: min(17.5rem, 50%) minmax(0, 1fr);
       gap: var(--s-6);
     }
   }

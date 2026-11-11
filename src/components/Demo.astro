@@ -1,6 +1,7 @@
 ---
 // The hero demo: a spreadsheet with sheet tabs (Shop, Bookings, League) driving a phone.
-// Without JavaScript only the Shop example shows and the tabs are hidden.
+// Every phone has the same three parts: the title, one Lime strip, five rows.
+// Without JavaScript only the Shop example shows, with plain values and no controls.
 import home from '../copy/home.json';
 import PhoneFrame from './PhoneFrame.astro';
 
@@ -19,6 +20,10 @@ const bookingsStrip =
 const players = league.players.map((p) => ({ ...p, id: `player-${slug(p.name)}` }));
 // Highest first. Array.sort is stable, so ties keep their sheet order.
 const standings = [...players].sort((a, b) => b.points - a.points);
+const leagueStrip =
+  standings[0].points === standings[1].points
+    ? league.strip.tied
+    : fill(league.strip.leads, { name: standings[0].name, margin: standings[0].points - standings[1].points });
 
 const tabs = [
   { key: 'shop', label: shop.tab, caption: shop.caption },
@@ -29,20 +34,25 @@ const tabs = [
 // Strings the script needs, passed as data (not code).
 const text = {
   shop: {
-    yes: shop.yes,
-    no: shop.no,
     strip: shop.strip,
     autoSoldOut: shop.autoSoldOut,
-    ...shop.accessibility,
+    nowSoldOut: shop.accessibility.nowSoldOut,
+    nowInStock: shop.accessibility.nowInStock,
   },
   bookings: {
     open: bookings.open,
     booked: bookings.booked,
     newBooking: bookings.newBooking,
     strip: bookings.strip,
-    ...bookings.accessibility,
+    nowBooked: bookings.accessibility.nowBooked,
+    nowOpen: bookings.accessibility.nowOpen,
   },
-  league: league.accessibility,
+  league: {
+    strip: league.strip,
+    movesUp: league.accessibility.movesUp,
+    movesDown: league.accessibility.movesDown,
+    places: league.accessibility.places,
+  },
 };
 ---
 
@@ -70,13 +80,14 @@ const text = {
                 shopItems.map((item, index) => (
                   <tr data-row={item.id} data-name={item.name}>
                     <td class="num" aria-hidden="true">{index + 2}</td>
-                    <th scope="row" class="wrap">{item.name}</th>
+                    <th scope="row">{item.name}</th>
                     <td>{item.price}</td>
-                    <td class="control-cell" data-cell>
+                    <td class="check-cell" data-cell>
                       <span class="static">{shop.yes}</span>
-                      <button type="button" class="toggle" data-toggle aria-label={fill(shop.accessibility.markSoldOut, { name: item.name })}>
-                        {shop.yes}
-                      </button>
+                      <label class="check">
+                        <input type="checkbox" checked data-toggle />
+                        <span class="vh">{fill(shop.accessibility.checkbox, { name: item.name })}</span>
+                      </label>
                     </td>
                   </tr>
                 ))
@@ -96,25 +107,21 @@ const text = {
                 <td class="num" aria-hidden="true">1</td>
                 <th scope="col">{bookings.columns.time}</th>
                 <th scope="col">{bookings.columns.name}</th>
-                <th scope="col">{bookings.columns.status}</th>
+                <th scope="col">{bookings.columns.booked}</th>
               </tr>
             </thead>
             <tbody>
               {
                 slots.map((slot, index) => (
-                  <tr data-row={slot.id} data-time={slot.time} data-booked={String(slot.booked)}>
+                  <tr data-row={slot.id} data-time={slot.time}>
                     <td class="num" aria-hidden="true">{index + 2}</td>
                     <th scope="row">{slot.time}</th>
-                    <td class="wrap" data-name>{slot.name}</td>
-                    <td class="control-cell" data-cell>
-                      <button
-                        type="button"
-                        class="toggle"
-                        data-toggle
-                        aria-label={fill(slot.booked ? bookings.accessibility.markOpen : bookings.accessibility.markBooked, { time: slot.time })}
-                      >
-                        {slot.booked ? bookings.booked : bookings.open}
-                      </button>
+                    <td class="name-cell" data-name>{slot.name}</td>
+                    <td class="check-cell" data-cell>
+                      <label class="check">
+                        <input type="checkbox" checked={slot.booked} data-toggle />
+                        <span class="vh">{fill(bookings.accessibility.checkbox, { time: slot.time })}</span>
+                      </label>
                     </td>
                   </tr>
                 ))
@@ -147,10 +154,10 @@ const text = {
                         <span class="value" data-value>{p.points}</span>
                         <span class="steps">
                           <button type="button" class="step" data-delta="-1" aria-label={fill(league.accessibility.removePoint, { name: p.name })}>
-                            <span aria-hidden="true">&#8722;</span>
+                            <span class="glyph" aria-hidden="true">&#8722;</span>
                           </button>
                           <button type="button" class="step" data-delta="1" aria-label={fill(league.accessibility.addPoint, { name: p.name })}>
-                            <span aria-hidden="true">+</span>
+                            <span class="glyph" aria-hidden="true">+</span>
                           </button>
                         </span>
                       </div>
@@ -163,7 +170,7 @@ const text = {
         </div>
       </div>
 
-      <!-- Sheet tabs, along the bottom like a real spreadsheet -->
+      <!-- The sheet tab bar, attached to the bottom of the sheet -->
       <div class="tabbar">
         <div class="tabs" role="tablist" aria-label={demo.tabsLabel}>
           {
@@ -177,7 +184,6 @@ const text = {
                 aria-controls={`sheet-${tab.key} view-${tab.key}`}
                 tabindex={index === 0 ? '0' : '-1'}
                 data-caption={tab.caption}
-                data-key={tab.key}
               >
                 {tab.label}
               </button>
@@ -188,6 +194,8 @@ const text = {
     </div>
   </div>
 
+  <p class="caption" data-caption-text>{shop.caption}</p>
+
   <div class="demo-phone">
     <p class="label" id="phone-label">{hero.phoneLabel}</p>
     <PhoneFrame labelledby="phone-label">
@@ -195,15 +203,15 @@ const text = {
         <span class="speaker" aria-hidden="true"></span>
 
         <div class="view" id="view-shop" data-view="shop">
-          <p class="strip" data-strip>{fill(shop.strip, { n: shopItems.length, total: shopItems.length })}</p>
           <p class="app-title" id="title-shop">{shop.screenTitle}</p>
+          <p class="strip" data-strip>{fill(shop.strip, { n: shopItems.length, total: shopItems.length })}</p>
           <ul class="app-list" data-list aria-labelledby="title-shop">
             {
               shopItems.map((item) => (
                 <li class="app-row" data-row={item.id}>
                   <span class="name">{item.name}</span>
                   <span class="big price">{item.price}</span>
-                  <span class="sold-out">{shop.soldOut}</span>
+                  <span class="end sold-out">{shop.soldOut}</span>
                 </li>
               ))
             }
@@ -211,14 +219,14 @@ const text = {
         </div>
 
         <div class="view" id="view-bookings" data-view="bookings" hidden>
-          <p class="strip" data-strip>{bookingsStrip}</p>
           <p class="app-title" id="title-bookings">{bookings.screenTitle}</p>
+          <p class="strip" data-strip>{bookingsStrip}</p>
           <ul class="app-list" data-list aria-labelledby="title-bookings">
             {
               slots.map((slot) => (
-                <li class="app-row" data-row={slot.id} hidden={slot.booked}>
+                <li class:list={['app-row', { 'is-booked': slot.booked }]} data-row={slot.id}>
                   <span class="big time">{slot.time}</span>
-                  <span class="name end">{bookings.open}</span>
+                  <span class="end" data-status>{slot.booked ? bookings.booked : bookings.open}</span>
                 </li>
               ))
             }
@@ -227,10 +235,11 @@ const text = {
 
         <div class="view" id="view-league" data-view="league" hidden>
           <p class="app-title" id="title-league">{league.screenTitle}</p>
+          <p class="strip" data-strip>{leagueStrip}</p>
           <ol class="app-list" data-list aria-labelledby="title-league">
             {
               standings.map((p, index) => (
-                <li class:list={['app-row', 'standing', { 'is-leader': index === 0 }]} data-row={p.id}>
+                <li class="app-row standing" data-row={p.id}>
                   <span class="big pos" data-pos>{index + 1}</span>
                   <span class="name">{p.name}</span>
                   <span class="big pts">
@@ -242,13 +251,10 @@ const text = {
             }
           </ol>
         </div>
-
-        <span class="home-bar" aria-hidden="true"></span>
       </div>
     </PhoneFrame>
   </div>
 
-  <p class="caption" data-caption-text>{shop.caption}</p>
   <p class="vh" aria-live="polite" data-live></p>
 </div>
 
@@ -257,37 +263,69 @@ const text = {
 </script>
 
 <style>
+  /* Sizes that tighten on short windows and in the narrow (stacked) layout. */
   .demo {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: var(--s-6) var(--s-7);
+    --sheet-row: 2.75rem; /* 44 px */
+    --letters-row: 0;
+    --phone-row: 2.5rem; /* 40 px */
+    --app-title: var(--fs-36);
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'caption' 'phone' 'sheet';
+    gap: var(--s-4);
   }
   .demo-sheet {
-    flex: 1 1 19rem;
-    max-width: 27rem;
+    grid-area: sheet;
     min-width: 0;
   }
   .demo-phone {
+    grid-area: phone;
     --phone-w: 17.5rem;
-    /* A definite width, so the phone is the same size on every tab. */
-    flex: 0 0 auto;
     width: min(var(--phone-w), 100%);
   }
+  .caption {
+    grid-area: caption;
+    max-width: 44ch;
+    font-size: var(--fs-16);
+  }
   .label {
-    margin-bottom: var(--s-3);
+    margin-bottom: var(--s-2);
     font-size: var(--fs-16);
     font-weight: 600;
   }
-  .caption {
-    flex-basis: 100%;
-    max-width: 44ch;
-    margin-top: calc(var(--s-2) * -1);
-    font-size: var(--fs-16);
+
+  /* Side by side when the Lime field is wide enough: sheet and caption on the left, phone on the right. */
+  @container field (min-width: 36rem) {
+    .demo {
+      --letters-row: 2rem;
+      --sheet-row: 3rem;
+      --phone-row: 2.75rem;
+      --app-title: var(--fs-48);
+      grid-template-columns: minmax(0, 27rem) auto;
+      grid-template-areas: 'sheet phone' 'caption phone';
+      grid-template-rows: auto 1fr;
+      column-gap: var(--s-7);
+      row-gap: var(--s-4);
+      align-items: start;
+    }
+  }
+  @media (max-height: 800px) {
+    @container field (min-width: 36rem) {
+      .demo {
+        --letters-row: 1.75rem;
+        --sheet-row: 2.75rem;
+        --phone-row: 2.5rem;
+        --app-title: var(--fs-36);
+      }
+    }
   }
 
   /* ---------- Spreadsheet ---------- */
+  /* Scrolls inside its own box when text is very large. Positioned, so the visually hidden
+     checkbox names stay inside it instead of widening the page. */
   .sheet-scroll {
+    position: relative;
     overflow-x: auto;
   }
   .sheet {
@@ -299,28 +337,24 @@ const text = {
   }
   .sheet th,
   .sheet td {
-    height: 3.25rem;
+    height: var(--sheet-row);
     padding: 0 var(--s-3);
     border: 1px solid var(--line);
     text-align: left;
     font-weight: 400;
     white-space: nowrap;
   }
-  .sheet .wrap {
-    white-space: normal;
-  }
-  @media (max-width: 29.99em) {
-    .sheet th,
-    .sheet td {
-      padding-inline: var(--s-2);
-    }
-    .toggle {
-      min-width: 3.5rem;
-    }
+  .sheet .letters {
+    display: none;
   }
   .sheet .letters td {
-    height: 2rem;
+    height: var(--letters-row);
     background: var(--cell);
+  }
+  @container field (min-width: 36rem) {
+    .sheet .letters {
+      display: table-row;
+    }
   }
   .sheet .num,
   .sheet .corner {
@@ -334,63 +368,77 @@ const text = {
     outline: 2px solid var(--moss);
     outline-offset: -2px;
   }
+  @media (max-width: 29.99em) {
+    .sheet th,
+    .sheet td {
+      padding-inline: var(--s-2);
+    }
+  }
 
-  /* Cell controls: shown only when the script runs. */
-  .control-cell {
+  /* Checkbox cells: the whole cell is the hit area. Shown only when the script runs. */
+  .check-cell {
     width: 1%;
-    padding-inline: var(--s-1) !important;
+    padding: 0 !important;
   }
   .static {
-    padding-inline: var(--s-2);
+    padding-inline: var(--s-3);
   }
-  .toggle,
-  .steps {
+  .check {
     display: none;
+    align-items: center;
+    min-width: var(--tap);
+    min-height: max(var(--sheet-row), var(--tap));
+    padding-inline: var(--s-3);
+    cursor: pointer;
   }
   :global(.js) .static {
     display: none;
   }
-  :global(.js) .toggle {
-    display: inline-flex;
+  :global(.js) .check {
+    display: flex;
   }
-  :global(.js) .steps {
-    display: inline-flex;
-  }
-  .toggle {
-    align-items: center;
-    justify-content: center;
-    min-width: 4.25rem;
-    min-height: var(--tap);
-    padding: 0 var(--s-3);
+  /* Drawn like a spreadsheet checkbox: a 20 px square, 2 px Charcoal outline, square corners. */
+  .check input {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
     border: 2px solid var(--charcoal);
-    border-radius: var(--radius-button);
+    border-radius: 0;
     background: var(--chalk);
-    font-size: var(--fs-16);
-    font-weight: 600;
     cursor: pointer;
   }
-  @media (hover: hover) {
-    .toggle:hover {
-      background: var(--charcoal);
-      color: var(--chalk);
-    }
+  .check input:checked {
+    background: var(--charcoal)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fafbf7' stroke-width='2.2' stroke-linecap='square'/%3E%3C/svg%3E")
+      center / 100% no-repeat;
+  }
+  .check input:focus-visible {
+    outline: 3px solid var(--charcoal);
+    outline-offset: 2px;
   }
 
+  /* League: quiet +/- with a 44 px hit area around a smaller drawn square. */
   .sheet .points {
     width: 1%;
-    padding-inline-end: var(--s-1);
+    padding-inline-end: 0;
   }
   .points-inner {
     display: flex;
     align-items: center;
-    gap: var(--s-3);
+    gap: var(--s-2);
   }
   .value {
     min-width: 2ch;
     text-align: right;
   }
   .steps {
-    gap: var(--s-1);
+    display: none;
+  }
+  :global(.js) .steps {
+    display: inline-flex;
   }
   .step {
     display: inline-grid;
@@ -398,30 +446,36 @@ const text = {
     width: var(--tap);
     height: var(--tap);
     padding: 0;
-    border: 2px solid var(--charcoal);
-    border-radius: var(--radius-button);
-    background: var(--chalk);
-    font-size: var(--fs-24);
-    line-height: 1;
+    border: 0;
+    background: transparent;
     cursor: pointer;
   }
+  .glyph {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-button);
+    background: var(--chalk);
+    font-size: var(--fs-21);
+    line-height: 1;
+  }
   @media (hover: hover) {
-    .step:hover {
-      background: var(--charcoal);
-      color: var(--chalk);
+    .step:hover .glyph {
+      border-color: var(--charcoal);
     }
   }
   .step[aria-disabled='true'] {
-    border-color: var(--line);
-    color: var(--line);
-    background: var(--chalk);
     cursor: not-allowed;
   }
+  .step[aria-disabled='true'] .glyph {
+    color: var(--line);
+  }
 
-  /* ---------- Sheet tabs ---------- */
+  /* ---------- Sheet tab bar ---------- */
   .tabbar {
     display: none;
-    padding: 0 var(--s-2) var(--s-2);
     border: 1px solid var(--line);
     border-top: 0;
     background: var(--cell);
@@ -432,79 +486,78 @@ const text = {
   .tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-1);
   }
   .tab {
+    position: relative;
     min-height: var(--tap);
+    margin-top: -1px;
     padding: 0 var(--s-4);
-    border: 2px solid var(--charcoal);
-    border-top-width: 0;
-    border-radius: 0 0 var(--radius-button) var(--radius-button);
-    background: var(--chalk);
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: transparent;
     font-size: var(--fs-16);
-    font-weight: 600;
+    font-weight: 400;
     cursor: pointer;
   }
   @media (hover: hover) {
     .tab:hover {
-      background: var(--cell);
+      text-decoration: underline;
     }
   }
-  /* Selected: Charcoal fill plus an underlined, heavier label, so it reads without color. */
+  /* Selected: joins the sheet above (cell background), bold, with a 3 px Charcoal bar. */
   .tab[aria-selected='true'] {
-    background: var(--charcoal);
-    color: var(--chalk);
+    background: var(--chalk);
     font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
+  }
+  .tab[aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--charcoal);
+  }
+  .tab:focus-visible {
+    z-index: 1;
   }
 
   /* ---------- Phone app ---------- */
   .app {
-    display: flex;
-    flex-direction: column;
-    min-height: 30.5rem;
     padding: var(--s-3);
   }
-  .speaker,
-  .home-bar {
+  .speaker {
     display: block;
+    width: 4.5rem;
     height: 0.375rem;
-    margin-inline: auto;
+    margin: 0 auto var(--s-3);
     border-radius: 999px;
     background: var(--charcoal);
   }
-  .speaker {
-    flex: none;
-    width: 4.5rem;
-    margin-bottom: var(--s-4);
-  }
-  .home-bar {
-    flex: none;
-    width: 6rem;
-    margin-top: auto;
-  }
-  .view {
-    margin-bottom: var(--s-5);
+  .app-title {
+    padding: 0 var(--s-2);
+    margin-bottom: var(--s-2);
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: var(--app-title);
+    line-height: var(--lh-display);
+    white-space: nowrap;
   }
   .strip {
-    margin-bottom: var(--s-4);
-    padding: var(--s-2) var(--s-3);
+    margin-bottom: var(--s-2);
+    padding: var(--s-1) var(--s-3);
+    overflow: hidden;
     border-radius: var(--radius-button);
     background: var(--lime);
     font-size: var(--fs-16);
     font-weight: 600;
-  }
-  .app-title {
-    padding: 0 var(--s-2) var(--s-3);
-    font-family: var(--font-display);
-    font-size: var(--fs-48);
-    line-height: var(--lh-display);
+    line-height: 1.6;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .app-list {
     display: grid;
-    gap: var(--s-1);
+    gap: 0;
     padding: 0;
     list-style: none;
   }
@@ -513,16 +566,11 @@ const text = {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--s-2);
-    min-height: 3.25rem;
+    height: var(--phone-row);
     padding: 0 var(--s-2);
-    border-radius: var(--radius-button);
-    background: var(--app-white);
   }
   .app-row.standing {
     grid-template-columns: 1.75rem minmax(0, 1fr) auto;
-  }
-  .app-row.is-leader {
-    background: var(--lime);
   }
   .big {
     font-family: var(--font-display);
@@ -537,19 +585,16 @@ const text = {
     overflow: hidden;
     font-size: var(--fs-16);
     font-weight: 600;
-    line-height: 1.25;
     text-overflow: ellipsis;
-  }
-  .name.end {
-    text-align: right;
-  }
-  .standing .name {
     white-space: nowrap;
+  }
+  .end {
+    font-size: var(--fs-16);
+    font-weight: 600;
+    text-align: right;
   }
   .sold-out {
     display: none;
-    font-size: var(--fs-16);
-    font-weight: 600;
   }
   .app-row.is-sold-out .price {
     display: none;
@@ -558,6 +603,13 @@ const text = {
     display: block;
   }
   .app-row.is-sold-out .name {
+    font-weight: 400;
+  }
+  /* Booked times: dimmed but readable (Moss, regular weight). */
+  .app-row.is-booked {
+    color: var(--moss);
+  }
+  .app-row.is-booked .end {
     font-weight: 400;
   }
 </style>

@@ -1,8 +1,9 @@
 ---
-// Site header. Desktop: logo, three links, Email us button.
-// Phone: logo, Email us button, and a Menu built on <details> so it works without JavaScript.
+// Site header. Desktop: horizontal logo, three links, Email us button.
+// Phone: logo, Email us, and a Menu built on <details> so it works without JavaScript.
+// Its label reads Close while the menu is open.
 import { Picture } from 'astro:assets';
-import logo from '../assets/logo/scoutiq-logo-light.png';
+import logo from '../assets/logo/scoutiq-logo-horizontal-light.png';
 import site from '../copy/site.json';
 import settings from '../settings.json';
 
@@ -10,7 +11,7 @@ const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(set
 const links = settings.clientSignIn.enabled
   ? [...site.nav, { label: site.clientSignIn, href: settings.clientSignIn.href }]
   : site.nav;
-const logoHeight = 56;
+const logoHeight = 36;
 const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
 ---
 
@@ -22,10 +23,11 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
         alt={site.logoAlt}
         width={logoWidth}
         height={logoHeight}
-        densities={[1, 2]}
+        densities={[1, 2, 3]}
         formats={['avif', 'webp']}
         fallbackFormat="png"
         loading="eager"
+        fetchpriority="high"
       />
     </a>
 
@@ -35,57 +37,70 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
       </ul>
     </nav>
 
-    <a class="btn btn--secondary cta" href={mailto}>{site.headerButton}</a>
-
-    <details class="menu">
-      <summary>{site.menuLabel}</summary>
-      <nav class="menu-panel" aria-label="Main">
-        <ul>
-          {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
-        </ul>
-      </nav>
-    </details>
+    <div class="actions">
+      <a class="btn btn--secondary cta" href={mailto}>{site.headerButton}</a>
+      <details class="menu">
+        <summary>
+          <span class="when-closed">{site.menuLabel}</span>
+          <span class="when-open">{site.menuCloseLabel}</span>
+        </summary>
+        <nav class="menu-panel" aria-label="Main">
+          <ul>
+            {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+          </ul>
+        </nav>
+      </details>
+    </div>
   </div>
 </header>
 
 <style>
   .site-header {
     position: relative;
-    padding-block: var(--s-4);
+    padding-block: var(--s-2);
   }
   .bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--s-3) var(--s-4);
+    gap: var(--s-2) var(--s-3);
   }
+  /* The image is 30 to 36 px tall; the link around it is a full 44 px tap target. */
   .logo {
-    display: block;
+    display: flex;
+    align-items: center;
     flex: none;
+    min-height: var(--tap);
     border-radius: 2px;
   }
+  /* Phone: the mark 30 px tall, so the wordmark is about 16.7 px tall. */
   .logo :global(img) {
-    height: 3rem;
     width: auto;
+    height: 1.875rem;
   }
 
-  /* Phone first: the wide nav is hidden, the menu shows. */
   .nav-wide {
     display: none;
   }
-  .cta {
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
     margin-inline-start: auto;
   }
+  .cta {
+    padding-inline: var(--s-3);
+  }
 
+  /* Menu: a plain text button, 44 px tall, no outline. */
   .menu summary {
     display: flex;
     align-items: center;
     min-height: var(--tap);
-    padding: var(--s-2) var(--s-4);
-    border: 2px solid var(--charcoal);
+    padding: 0 var(--s-2);
     border-radius: var(--radius-button);
-    font-weight: 600;
     font-size: var(--fs-16);
+    font-weight: 600;
     line-height: 1.2;
     cursor: pointer;
     list-style: none;
@@ -94,9 +109,14 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
   .menu summary::-webkit-details-marker {
     display: none;
   }
-  .menu[open] summary {
-    background: var(--charcoal);
-    color: var(--chalk);
+  .menu:not([open]) .when-open,
+  .menu[open] .when-closed {
+    display: none;
+  }
+  @media (hover: hover) {
+    .menu summary:hover {
+      text-decoration: underline;
+    }
   }
   .menu-panel {
     position: absolute;
@@ -128,12 +148,21 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
     }
   }
 
+  /* Very large text (or the narrowest phones): logo on the first row, buttons side by side on the second. */
+  @media (max-width: 21em) {
+    .actions {
+      flex-basis: 100%;
+      margin-inline-start: 0;
+    }
+  }
+
   @media (min-width: 48em) {
     .site-header {
-      padding-block: var(--s-5);
+      padding-block: var(--s-3);
     }
+    /* Laptop: the mark 36 px tall, the wordmark 20 px tall. */
     .logo :global(img) {
-      height: 3.5rem;
+      height: 2.25rem;
     }
     .nav-wide {
       display: block;
@@ -161,8 +190,11 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
         text-decoration-thickness: 2px;
       }
     }
-    .cta {
+    .actions {
       margin-inline-start: var(--s-3);
+    }
+    .cta {
+      padding-inline: var(--s-4);
     }
     .menu {
       display: none;

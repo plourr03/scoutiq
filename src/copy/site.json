@@ -6,9 +6,18 @@
   "skipLink": "Skip to content",
   "logoAlt": "ScoutIQ",
   "nav": [
-    { "label": "What we build", "href": "/#what-we-build" },
-    { "label": "Our products", "href": "/#products" },
-    { "label": "About", "href": "/#about" }
+    {
+      "label": "What we build",
+      "href": "/#what-we-build"
+    },
+    {
+      "label": "Our products",
+      "href": "/#products"
+    },
+    {
+      "label": "About",
+      "href": "/#about"
+    }
   ],
   "headerButton": "Email us",
   "menuLabel": "Menu",
@@ -25,5 +34,6 @@
     "heading": "That page is not here.",
     "body": "The page you asked for does not exist.",
     "link": "Go to the home page"
-  }
+  },
+  "menuCloseLabel": "Close"
 }

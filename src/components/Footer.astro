@@ -68,6 +68,10 @@ const copy = site.footer;
   }
 
   @media (min-width: 64em) {
+    /* The last line of each column (address, Back to top, copyright) sits on one baseline. */
+    .site-footer .page-grid {
+      align-items: last baseline;
+    }
     .brand {
       grid-column: 2 / span 4;
       margin-bottom: 0;
@@ -77,7 +81,6 @@ const copy = site.footer;
     }
     .copyright {
       grid-column: 10 / span 4;
-      align-self: end;
       margin-top: 0;
     }
   }

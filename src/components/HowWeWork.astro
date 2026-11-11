@@ -1,6 +1,7 @@
 ---
 // How we work: four commitments. A row of four on desktop, two by two on a tablet,
-// stacked on a phone. No boxes, no numbers.
+// stacked on a phone. No boxes, no numbers. On desktop the statements share one row,
+// so the sentences under them all start on the same line.
 import home from '../copy/home.json';
 const copy = home.howWeWork;
 ---
@@ -48,6 +49,12 @@ const copy = home.howWeWork;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--s-7) var(--gap);
     }
+    .promises li {
+      display: grid;
+      grid-row: span 2;
+      grid-template-rows: subgrid;
+      row-gap: 0;
+    }
     h3 {
       font-size: var(--fs-48);
     }
@@ -56,6 +63,7 @@ const copy = home.howWeWork;
   @media (min-width: 64em) {
     .promises {
       grid-template-columns: subgrid;
+      grid-template-rows: auto auto;
       row-gap: 0;
     }
     .promises li {

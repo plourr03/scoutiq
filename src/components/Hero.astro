@@ -31,13 +31,14 @@ const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(set
 
 <style>
   .hero {
+    /* The headline measures itself against the hero's width (cqi). */
+    container: hero / inline-size;
     background: var(--chalk);
-    padding-top: var(--s-6);
+    padding-top: var(--s-5);
   }
 
   /* ---------- Words ---------- */
-  /* 72 px on phones: the short headline fills about three quarters of the line at 390 px
-     and still fits at 320 px. 96 px from tablet, 128 px from 1200 px. */
+  /* Phones: 72 px over three lines. Tablet: 96 px over two. From 1200 px: one line. */
   .title {
     font-size: var(--fs-72);
     line-height: var(--lh-display);
@@ -65,58 +66,54 @@ const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(set
 
   /* ---------- Lime field ---------- */
   .field {
+    container: field / inline-size;
     grid-column: full;
-    margin-top: var(--s-7);
-    padding: var(--s-6) var(--gutter) var(--s-7);
+    margin-top: var(--s-6);
+    padding: var(--s-4) var(--gutter);
     background: var(--lime);
   }
 
   @media (min-width: 48em) {
     .hero {
-      padding-top: var(--s-7);
+      padding-top: var(--s-6);
     }
     .title {
       font-size: var(--fs-96);
     }
     .field {
       grid-column: content-start / full-end;
-      padding: var(--s-7) var(--s-7) var(--s-8);
+      padding: var(--s-6) var(--s-7);
     }
   }
 
-  @media (min-width: 64em) {
+  /* From 1200 px: the headline on one line, words on the left and the demo to the right.
+     Vertical space scales with the window height so the whole demo fits on the first screen
+     of a short laptop. The headline is about 94 percent of the 1200 px container and never
+     taller than 15 percent of the window. */
+  @media (min-width: 75em) {
     .hero {
-      padding-top: var(--s-8);
+      --hero-space: clamp(0.75rem, 3vh, 2.5rem);
+      padding-top: var(--hero-space);
     }
     .title {
-      margin-bottom: var(--s-7);
+      margin-bottom: var(--hero-space);
+      font-size: min(calc(0.1025 * min(1200px, 100cqi - 2 * var(--gutter))), 15vh);
+    }
+    .title .line {
+      display: inline;
     }
     .intro {
       grid-column: 2 / span 4;
       grid-row: 2;
       margin-top: 0;
+      padding-top: var(--s-2);
     }
     .field {
+      --field-space: clamp(1rem, 3.5vh, 2.5rem);
       grid-column: 6 / full-end;
       grid-row: 2;
       margin-top: 0;
-    }
-  }
-
-  @media (min-width: 75em) {
-    .title {
-      font-size: var(--fs-hero-128);
-    }
-  }
-
-  /* Short laptop windows: step the headline down one size so the button stays in view. */
-  @media (min-width: 64em) and (max-height: 760px) {
-    .hero {
-      padding-top: var(--s-5);
-    }
-    .title {
-      font-size: var(--fs-96);
-      margin-bottom: var(--s-6);
+      padding: var(--field-space) var(--s-7);
     }
   }
 </style>

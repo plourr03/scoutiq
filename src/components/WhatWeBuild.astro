@@ -1,5 +1,5 @@
 ---
-// What we build: seven rows laid out like a sheet. The thing on the left, one plain sentence on the right.
+// What we build: eight rows laid out like a sheet. The thing on the left, a plain sentence on the right.
 import home from '../copy/home.json';
 const copy = home.whatWeBuild;
 ---
@@ -38,14 +38,17 @@ const copy = home.whatWeBuild;
     line-height: 1.45;
   }
 
-  /* The sheet: square corners, Line grid lines, Chalk cells on the Cell ground. */
+  /* The sheet: square corners, Line grid lines, Chalk cells on the Cell ground.
+     Label and description share one line box height (1.75rem) so their first baselines match. */
   .build {
+    --row-pad: var(--s-5);
+    --dt-nudge: -1px;
     border-top: 1px solid var(--line);
     border-left: 1px solid var(--line);
     background: var(--chalk);
   }
   .build-row {
-    padding: var(--s-4) var(--s-4) var(--s-5);
+    padding: var(--s-4);
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
@@ -53,10 +56,11 @@ const copy = home.whatWeBuild;
     margin-bottom: var(--s-1);
     font-size: var(--fs-18);
     font-weight: 700;
-    line-height: 1.35;
+    line-height: 1.75rem;
   }
   dd {
     max-width: var(--measure);
+    line-height: 1.75rem;
   }
 
   @media (min-width: 48em) {
@@ -77,20 +81,22 @@ const copy = home.whatWeBuild;
     }
     dt,
     dd {
-      padding: var(--s-5) var(--s-4);
+      padding: var(--row-pad) var(--s-4);
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
     }
     dt {
-      grid-column: 1 / span 4;
-      /* Reach across the column gap so the grid line sits on the start of column 5. */
+      grid-column: 1 / span 5;
+      /* Reach across the column gap so the grid line sits on the start of column 6. */
       margin-right: calc(var(--gap) * -1);
       margin-bottom: 0;
       font-size: var(--fs-21);
-      line-height: 1.3;
+      /* Nudge so the 21 px label and the 18 px description share a first baseline (measured). */
+      padding-top: calc(var(--row-pad) + var(--dt-nudge, 0px));
+      padding-bottom: calc(var(--row-pad) - var(--dt-nudge, 0px));
     }
     dd {
-      grid-column: 5 / -1;
+      grid-column: 6 / -1;
     }
   }
 

@@ -1,9 +1,15 @@
 {
   "hero": {
-    "headline": ["You run it.", "We build what it runs on."],
+    "headline": [
+      "You run it.",
+      "We build what it runs on."
+    ],
     "supporting": "ScoutIQ builds websites and apps for businesses, clubs, leagues and anyone else with something to run.",
     "button": "Email us about your project",
-    "link": { "label": "See what we build", "href": "#what-we-build" },
+    "link": {
+      "label": "See what we build",
+      "href": "#what-we-build"
+    },
     "sheetLabel": "Your spreadsheet",
     "phoneLabel": "Their phone"
   },
@@ -13,31 +19,53 @@
       "tab": "Shop",
       "caption": "A sample shop. Mark something sold out and watch the phone change.",
       "screenTitle": "Shop",
-      "columns": { "item": "Item", "price": "Price", "inStock": "In stock" },
+      "columns": {
+        "item": "Item",
+        "price": "Price",
+        "inStock": "In stock"
+      },
       "yes": "Yes",
       "no": "No",
       "soldOut": "Sold out",
       "strip": "{n} of {total} in stock",
       "items": [
-        { "name": "House blend, 12 oz", "price": "$14" },
-        { "name": "Pour-over kit", "price": "$32" },
-        { "name": "Travel mug", "price": "$18" },
-        { "name": "Gift card", "price": "$25" },
-        { "name": "Cold brew, 32 oz", "price": "$9" }
+        {
+          "name": "House blend, 12 oz",
+          "price": "$14"
+        },
+        {
+          "name": "Pour-over kit",
+          "price": "$32"
+        },
+        {
+          "name": "Travel mug",
+          "price": "$18"
+        },
+        {
+          "name": "Gift card",
+          "price": "$25"
+        },
+        {
+          "name": "Cold brew, 32 oz",
+          "price": "$9"
+        }
       ],
       "autoSoldOut": "Travel mug",
       "accessibility": {
-        "markSoldOut": "Mark {name} as sold out",
-        "markInStock": "Mark {name} as in stock",
+        "checkbox": "{name} in stock",
         "nowSoldOut": "{name} is now sold out.",
         "nowInStock": "{name} is now in stock."
       }
     },
     "bookings": {
       "tab": "Bookings",
-      "caption": "A sample day. Book a time and it leaves the phone.",
+      "caption": "A sample day. Mark a time booked and watch the phone change.",
       "screenTitle": "Book a time",
-      "columns": { "time": "Time", "name": "Name", "status": "Status" },
+      "columns": {
+        "time": "Time",
+        "name": "Name",
+        "booked": "Booked"
+      },
       "open": "Open",
       "booked": "Booked",
       "newBooking": "New booking",
@@ -47,15 +75,34 @@
         "none": "Fully booked today."
       },
       "slots": [
-        { "time": "9:00 am", "name": "Dana P.", "booked": true },
-        { "time": "10:00 am", "name": "", "booked": false },
-        { "time": "11:00 am", "name": "Lee W.", "booked": true },
-        { "time": "1:00 pm", "name": "", "booked": false },
-        { "time": "2:00 pm", "name": "", "booked": false }
+        {
+          "time": "9:00 am",
+          "name": "Dana P.",
+          "booked": true
+        },
+        {
+          "time": "10:00 am",
+          "name": "",
+          "booked": false
+        },
+        {
+          "time": "11:00 am",
+          "name": "Lee W.",
+          "booked": true
+        },
+        {
+          "time": "1:00 pm",
+          "name": "",
+          "booked": false
+        },
+        {
+          "time": "2:00 pm",
+          "name": "",
+          "booked": false
+        }
       ],
       "accessibility": {
-        "markBooked": "Mark {time} as booked",
-        "markOpen": "Mark {time} as open",
+        "checkbox": "{time} booked",
         "nowBooked": "{time} is now booked.",
         "nowOpen": "{time} is now open."
       }
@@ -64,13 +111,31 @@
       "tab": "League",
       "caption": "A sample league. Change a score and watch the standings move.",
       "screenTitle": "Standings",
-      "columns": { "player": "Player", "points": "Points" },
+      "columns": {
+        "player": "Player",
+        "points": "Points"
+      },
       "players": [
-        { "name": "Avery K.", "points": 24 },
-        { "name": "Jordan M.", "points": 22 },
-        { "name": "Sam R.", "points": 21 },
-        { "name": "Riley T.", "points": 19 },
-        { "name": "Casey B.", "points": 17 }
+        {
+          "name": "Avery K.",
+          "points": 24
+        },
+        {
+          "name": "Jordan M.",
+          "points": 22
+        },
+        {
+          "name": "Sam R.",
+          "points": 21
+        },
+        {
+          "name": "Riley T.",
+          "points": 19
+        },
+        {
+          "name": "Casey B.",
+          "points": 17
+        }
       ],
       "accessibility": {
         "addPoint": "Add a point for {name}",
@@ -78,7 +143,17 @@
         "pointsUnit": "points",
         "movesUp": "{name} moves up to {place}.",
         "movesDown": "{name} moves down to {place}.",
-        "places": ["first", "second", "third", "fourth", "fifth"]
+        "places": [
+          "first",
+          "second",
+          "third",
+          "fourth",
+          "fifth"
+        ]
+      },
+      "strip": {
+        "leads": "{name} leads by {margin}",
+        "tied": "Tied at the top"
       }
     }
   },
@@ -87,35 +162,35 @@
     "intro": "Tell us how you work today, spreadsheets and all. We build around it.",
     "rows": [
       {
-        "thing": "Websites that load fast on a phone.",
+        "thing": "Websites that load fast on a phone",
         "detail": "A clear home for what you do, on the screen your customers actually use."
       },
       {
-        "thing": "Online stores and payments.",
+        "thing": "Online stores and payments",
         "detail": "Sell products, tickets, sign-ups or memberships. The money goes straight to your account, never through ours."
       },
       {
-        "thing": "Booking and sign-up.",
+        "thing": "Booking and sign-up",
         "detail": "Appointments, classes, events and registrations, taken online at any hour."
       },
       {
-        "thing": "Customer and member accounts.",
+        "thing": "Customer and member accounts",
         "detail": "A private sign-in where people see their own orders, bookings and history."
       },
       {
-        "thing": "Apps for iPhone and Android.",
+        "thing": "Apps for iPhone and Android",
         "detail": "When a website is not enough, we build the app and get it into the app stores."
       },
       {
-        "thing": "Admin tools that start from your spreadsheet.",
+        "thing": "Admin tools from your spreadsheet",
         "detail": "Keep working in Google Sheets or Excel. Upload the file and the site updates."
       },
       {
-        "thing": "Live scores and standings.",
+        "thing": "Live scores and standings",
         "detail": "For leagues, tours and clubs. Scores go in during the event and standings update on every phone."
       },
       {
-        "thing": "Dashboards and data.",
+        "thing": "Dashboards and data",
         "detail": "Reports, rankings and forecasts built on your own numbers."
       }
     ]
@@ -151,15 +226,15 @@
         "button": "Read Wolves to a T",
         "href": "https://wolvestoat.com/",
         "image": "wolves-to-a-t",
-        "alt": "The Wolves to a T home page on a phone"
+        "alt": "Wolves to a T on a phone: the home page, showing the latest part of The Clock series with a button to read it"
       },
       {
         "name": "Settlers After Dark",
         "description": "Game night, organized. Schedule nights, keep score and track who is really the best at the table.",
         "button": "Open Settlers After Dark",
         "href": "https://settlers-after-dark.com/",
-        "image": "settlers-after-dark",
-        "alt": "The Settlers After Dark home page on a phone"
+        "image": "settlers-after-dark-polls",
+        "alt": "Settlers After Dark on a phone: a game night poll asking what to play and which day works for everyone"
       }
     ]
   },
@@ -170,6 +245,8 @@
   "contact": {
     "heading": "Tell us what you run.",
     "sentence": "A shop, a service, a club, a league, an idea. Send a few lines about it and what is not working today, and we will write back.",
-    "button": "Email us"
+    "button": "Email us",
+    "copyButton": "Copy address",
+    "copiedButton": "Copied"
   }
 }

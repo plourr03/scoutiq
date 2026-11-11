@@ -1,0 +1,7 @@
+---
+import HomePage from '../components/HomePage.astro';
+import settings from '../settings.json';
+const ground = settings.heroGround === 'B' ? 'B' : 'A';
+---
+
+<HomePage ground={ground} />

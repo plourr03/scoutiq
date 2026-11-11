@@ -50,3 +50,8 @@ serviceAccountKey.json
 *-service-account*.json
 .env
 .env.*
+
+# Astro / Node
+node_modules/
+dist/
+.astro/

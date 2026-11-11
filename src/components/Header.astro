@@ -1,0 +1,166 @@
+---
+// Site header. Desktop: logo, three links, Email us button.
+// Phone: logo, Email us button, and a Menu built on <details> so it works without JavaScript.
+import { Picture } from 'astro:assets';
+import logo from '../assets/logo/scoutiq-logo-light.png';
+import site from '../copy/site.json';
+import settings from '../settings.json';
+
+const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(settings.contactSubject)}`;
+const links = settings.clientSignIn.enabled
+  ? [...site.nav, { label: site.clientSignIn, href: settings.clientSignIn.href }]
+  : site.nav;
+const logoHeight = 56;
+const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
+---
+
+<header class="site-header page-grid">
+  <div class="bar">
+    <a class="logo" href="/">
+      <Picture
+        src={logo}
+        alt={site.logoAlt}
+        width={logoWidth}
+        height={logoHeight}
+        densities={[1, 2]}
+        formats={['avif', 'webp']}
+        fallbackFormat="png"
+        loading="eager"
+      />
+    </a>
+
+    <nav class="nav-wide" aria-label="Main">
+      <ul>
+        {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <a class="btn btn--secondary cta" href={mailto}>{site.headerButton}</a>
+
+    <details class="menu">
+      <summary>{site.menuLabel}</summary>
+      <nav class="menu-panel" aria-label="Main">
+        <ul>
+          {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: relative;
+    padding-block: var(--s-4);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .logo {
+    display: block;
+    flex: none;
+    border-radius: 2px;
+  }
+  .logo :global(img) {
+    height: 3rem;
+    width: auto;
+  }
+
+  /* Phone first: the wide nav is hidden, the menu shows. */
+  .nav-wide {
+    display: none;
+  }
+  .cta {
+    margin-inline-start: auto;
+  }
+
+  .menu summary {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: var(--s-2) var(--s-4);
+    border: 2px solid var(--charcoal);
+    border-radius: var(--radius-button);
+    font-weight: 600;
+    font-size: var(--fs-16);
+    line-height: 1.2;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu[open] summary {
+    background: var(--charcoal);
+    color: var(--chalk);
+  }
+  .menu-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    /* Cover the rest of the screen so nothing underneath peeks through. */
+    min-height: 100dvh;
+    background: var(--cell);
+    padding: var(--s-4) var(--gutter) var(--s-7);
+  }
+  .menu-panel ul {
+    list-style: none;
+    padding: 0;
+  }
+  .menu-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 3rem;
+    color: var(--charcoal);
+    font-size: var(--fs-21);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .menu-panel a:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 48em) {
+    .site-header {
+      padding-block: var(--s-5);
+    }
+    .logo :global(img) {
+      height: 3.5rem;
+    }
+    .nav-wide {
+      display: block;
+      margin-inline-start: auto;
+    }
+    .nav-wide ul {
+      display: flex;
+      gap: var(--s-2);
+      list-style: none;
+      padding: 0;
+    }
+    .nav-wide a {
+      display: flex;
+      align-items: center;
+      min-height: var(--tap);
+      padding-inline: var(--s-3);
+      color: var(--charcoal);
+      font-weight: 600;
+      font-size: var(--fs-16);
+      text-decoration: none;
+    }
+    .nav-wide a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
+    .cta {
+      margin-inline-start: var(--s-3);
+    }
+    .menu {
+      display: none;
+    }
+  }
+</style>

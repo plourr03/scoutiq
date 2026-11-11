@@ -1,0 +1,42 @@
+---
+// Page shell: head, skip link, header slot, main, footer slot.
+import '../styles/global.css';
+import leagueGothic from '../fonts/league-gothic-latin-400-normal.woff2?url';
+import franklin400 from '../fonts/libre-franklin-latin-400-normal.woff2?url';
+import franklin600 from '../fonts/libre-franklin-latin-600-normal.woff2?url';
+import site from '../copy/site.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title = site.title, description = site.description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#fafbf7" />
+    <link rel="preload" href={leagueGothic} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={franklin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={franklin600} as="font" type="font/woff2" crossorigin />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{site.skipLink}</a>
+    <slot name="header" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>

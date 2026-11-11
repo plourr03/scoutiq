@@ -1,0 +1,14 @@
+{
+  "title": "ScoutIQ | Websites, apps and data tools for leagues, tours and clubs",
+  "description": "ScoutIQ is a small studio in Oshkosh, Wisconsin that builds websites, apps and data tools for people who run leagues, tours, clubs and small businesses.",
+  "skipLink": "Skip to content",
+  "logoAlt": "ScoutIQ",
+  "nav": [
+    { "label": "What we build", "href": "/#what-we-build" },
+    { "label": "Our products", "href": "/#products" },
+    { "label": "About", "href": "/#about" }
+  ],
+  "headerButton": "Email us",
+  "menuLabel": "Menu",
+  "clientSignIn": "Client sign in"
+}

@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "headline": ["You run the league.", "We build what it runs on."],
+    "supporting": "ScoutIQ makes websites, apps and data tools for people who run leagues, tours, clubs and small businesses.",
+    "button": "Email us about your project",
+    "link": { "label": "See what we build", "href": "#what-we-build" },
+    "sheetLabel": "Your spreadsheet",
+    "phoneLabel": "Their phone",
+    "screenTitle": "Standings",
+    "caption": "A sample league. Change a score and watch the standings move.",
+    "columns": { "player": "Player", "points": "Points" },
+    "players": [
+      { "name": "Avery K.", "points": 24 },
+      { "name": "Jordan M.", "points": 22 },
+      { "name": "Sam R.", "points": 21 },
+      { "name": "Riley T.", "points": 19 },
+      { "name": "Casey B.", "points": 17 }
+    ],
+    "accessibility": {
+      "addPoint": "Add a point for {name}",
+      "removePoint": "Remove a point from {name}",
+      "pointsUnit": "points",
+      "movesUp": "{name} moves up to {place}.",
+      "movesDown": "{name} moves down to {place}.",
+      "places": ["first", "second", "third", "fourth", "fifth"]
+    }
+  },
+  "whatWeBuild": {
+    "heading": "What we build",
+    "intro": "Most of the people we work with already run everything from a spreadsheet. We start there.",
+    "rows": [
+      {
+        "thing": "A website that loads fast on a phone.",
+        "detail": "Schedules, results, standings, rules and sponsors, on the screen your players actually use."
+      },
+      {
+        "thing": "Sign-up and payment.",
+        "detail": "Players register and pay online in a minute. The money goes straight to your account, never through ours."
+      },
+      {
+        "thing": "Live scoring and standings.",
+        "detail": "Scores go in during the event. Standings update on every phone."
+      },
+      {
+        "thing": "Player and member accounts.",
+        "detail": "Profiles and results that carry over from season to season."
+      },
+      {
+        "thing": "Admin tools that start from your spreadsheet.",
+        "detail": "Keep working in Google Sheets or Excel. Upload the file and the site updates."
+      },
+      {
+        "thing": "Event-day tools.",
+        "detail": "Check-in, pairings and start times in one place when the day gets busy."
+      },
+      {
+        "thing": "Data and analysis.",
+        "detail": "Rankings, ratings and forecasts, from a studio that publishes its own sports analytics."
+      }
+    ]
+  }
+}

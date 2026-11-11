@@ -1,0 +1,9 @@
+{
+  "contactEmail": "scoutiq12@gmail.com",
+  "contactSubject": "Project inquiry",
+  "heroGround": "A",
+  "clientSignIn": {
+    "enabled": false,
+    "href": "/client"
+  }
+}

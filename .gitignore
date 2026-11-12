@@ -55,3 +55,6 @@ serviceAccountKey.json
 node_modules/
 dist/
 .astro/
+
+# Firebase CLI deploy cache
+.firebase/

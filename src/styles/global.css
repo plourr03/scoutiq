@@ -44,6 +44,9 @@
   --line: #cdd3bf;
   --moss: #56660f;
   --app-white: #ffffff;
+  /* Muted text: Charcoal at 70 percent on white (about 5.3 to 1). Only for unavailable
+     rows inside the sample phones (sold out items, booked times). */
+  --muted: #696b6f;
 
   /* Type families */
   --font-display: "League Gothic", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;

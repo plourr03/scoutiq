@@ -1,164 +1,74 @@
-# ScoutIQ LLC
+# scout-iq.com
 
-**Transforming Ideas into Intelligent Solutions**
+The website of ScoutIQ LLC, a small studio in Oshkosh, Wisconsin.
 
-ScoutIQ LLC is an innovation hub dedicated to creating intelligent, user-centric platforms that solve real-world problems. This repository contains the official ScoutIQ company website built with Flutter Web.
+It is a static site built with [Astro](https://astro.build) and served by Firebase Hosting at https://scout-iq.com. It has no backend, no database, no analytics and no requests to other sites.
 
-## About ScoutIQ LLC
+## What it uses
 
-ScoutIQ LLC serves as an umbrella company for multiple innovative product ideas:
+- **Astro 7**, static output. Every page is plain HTML at build time.
+- **Plain CSS** with custom properties. There is no UI framework and no CSS framework.
+- **Vanilla JavaScript**, used only for the hero demo (the spreadsheet and the phone) and for the Copy address button. The pages read and work with JavaScript off.
+- **Fonts:** League Gothic and Libre Franklin, self-hosted as Latin-subset woff2 files under the SIL Open Font License. The licence files are in `src/fonts/`.
 
-### Our Products
+## Run it on your computer
 
-1. **[Wolves to a T](https://wolvestoat.com/)** - Analytics publication covering the Minnesota Timberwolves
-   - Advanced stat breakdowns of every game
-   - Player development and usage trends
-   - Lineup and rotation analysis
-   - Trade, roster, and draft deep dives
-
-2. **[Settlers After Dark](https://settlers-after-dark.com/)** - All-in-one board game night management platform
-   - Create and schedule game nights
-   - Log results across every game you play
-   - Rankings, leaderboards, and player stats
-   - Invites, RSVPs, and reminders
-
-3. **Consulting** - Professional business consulting services (contact scoutiq12@gmail.com)
-   - Strategic planning and execution
-   - Technology implementation and integration
-   - Process optimization and automation
-   - Data analysis and business intelligence
-
-## Tech Stack
-
-- **Framework**: Flutter Web 3.38.6
-- **Design System**: Material Design 3
-- **Typography**: Google Fonts (Inter)
-- **Responsive**: Mobile, tablet, and desktop optimized
-
-## Features
-
-- Modern, minimalistic design
-- Smooth animations and micro-interactions
-- Light and dark theme support (system-aware)
-- Fully responsive across all devices
-- SEO optimized
-- Progressive Web App (PWA) ready
-
-## Development
-
-### Prerequisites
-
-- Flutter SDK 3.38.6 or higher
-- Chrome browser for web development
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/scoutiq.git
-cd scoutiq
-
-# Get dependencies
-flutter pub get
-```
-
-### Run in Development
-
-```bash
-# Run on Chrome
-flutter run -d chrome
-
-# Or use hot reload for faster development
-flutter run -d chrome --hot
-```
-
-### Build for Production
-
-```bash
-# Build optimized web app
-flutter build web --release
-
-# Output will be in build/web/
-```
-
-## Project Structure
+You need Node.js 22.23.4 or newer.
 
 ```
-scoutiq/
-├── lib/
-│   ├── main.dart                 # App entry point
-│   ├── screens/
-│   │   └── home_screen.dart      # Main homepage
-│   ├── widgets/
-│   │   ├── hero_section.dart     # Hero/landing section
-│   │   ├── about_section.dart    # About company section
-│   │   ├── products_section.dart # Products showcase
-│   │   ├── product_card.dart     # Individual product card
-│   │   └── footer_section.dart   # Footer with links
-│   ├── theme/
-│   │   └── app_theme.dart        # Custom Material 3 theme
-│   └── models/
-│       └── product.dart          # Product data model
-├── assets/
-│   └── images/                   # Logo files
-├── web/
-│   ├── index.html               # HTML entry point
-│   └── manifest.json            # PWA manifest
-└── pubspec.yaml                 # Dependencies
+npm install
+npm run dev        # http://localhost:4321, reloads as you edit
+npm run build      # writes the finished site to dist/
+npm run preview    # serves dist/ the way it will be served live
 ```
 
-## Deployment
+## Where things live
 
-### Firebase Hosting
-
-```bash
-# Build the app
-flutter build web --release
-
-# Deploy to Firebase
-firebase deploy --only hosting
+```
+src/
+  copy/              every word on the site
+    site.json        page title, description, navigation, footer, not-found page
+    home.json        the home page: hero, demo examples, sections, contact
+    legal/           privacy.md and terms.md
+  settings.json      contact address, email subject, legal "Last Updated" date,
+                     the Client sign in switch
+  styles/global.css  colors, fonts, type scale, spacing, the 12 column grid, buttons
+  components/        one file per part of the page (Header, Hero, Demo, Footer, ...)
+  layouts/           the page shell (Base) and the legal page layout
+  pages/             index, privacy, terms, 404, sitemap.xml
+  scripts/demo.js    the hero demo
+  assets/            logos and the two product screenshots (optimized at build time)
+  fonts/             woff2 files and their licences
+public/              copied as is: icons, robots.txt, the web manifest, the social
+                     preview image, the Search Console file, flutter_service_worker.js
 ```
 
-### Other Platforms
+## Common edits
 
-The `build/web` directory contains static files that can be deployed to:
-- GitHub Pages
-- Netlify
-- Vercel
-- Any static hosting service
+- **Change any wording:** edit the JSON or Markdown in `src/copy/`. Nothing on the site is written inside a component.
+- **Change the contact address or the email subject:** edit `src/settings.json`. Every mail link and the address shown on the page update together.
+- **Update the legal pages:** edit `src/copy/legal/privacy.md` or `terms.md`, then set `legalLastUpdated` in `src/settings.json` to the day the change goes live.
+- **Turn on the Client sign in link:** set `clientSignIn.enabled` to `true` in `src/settings.json`. It points at `/clients`, which does not exist yet.
+- **Swap a product screenshot:** replace the PNG in `src/assets/products/` with a phone screenshot of the same shape (about 9 by 19.5). Astro makes the AVIF and WebP versions.
 
-## Design Principles
+After any change, check it with `npm run dev`, then publish as described in [DEPLOYMENT.md](DEPLOYMENT.md).
 
-- **Minimalism**: Clean layouts with strategic whitespace
-- **Typography**: Clear hierarchy with modern sans-serif fonts
-- **Responsive**: Mobile-first approach with adaptive layouts
-- **Accessibility**: Proper contrast ratios and semantic structure
-- **Performance**: Optimized assets and lazy loading
+## Design rules in short
 
-## Color Palette
+- **Colors:** six named tokens in `src/styles/global.css`: Charcoal, Lime, Chalk, Cell, Line and Moss. White is only for the phone screens. One muted grey is used only for unavailable rows inside the sample phones.
+- **Type:** League Gothic for headlines and big numbers, never under 28 px. Libre Franklin for everything else.
+- **Type scale:** 16, 18, 21, 24, 36, 48, 72, 96. The hero headline sits outside it, at 72 or 96 px or sized to fit on one line.
+- **Layout:** left aligned on a 12 column grid, 1200 px wide at most.
+- **Motion:** one moment only, the demo's rows moving. Reduced motion is respected.
 
-- Primary: `#2563EB` (Modern Blue)
-- Secondary: `#10B981` (Accent Green)
-- Accent Orange: `#F59E0B`
-- Accent Purple: `#8B5CF6`
-- Dark Background: `#0F172A`
-- Light Background: `#FAFAFA`
+## The old Flutter site
 
-## Browser Support
+Until November 2026 the site was a Flutter web app. Its last version is kept in git history under the tag `flutter-site-final`.
 
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
+One file from it is still served on purpose: `public/flutter_service_worker.js`. It is the Flutter app's self-unregistering service worker. Any browser that still has the old worker installed fetches this one, removes itself and reloads the page.
 
-## License
+## Secrets
 
-© 2026 ScoutIQ LLC. All rights reserved.
+This repository is public. Never commit keys, service account files or `.env` files. `.gitignore` blocks the usual names, but check `git status` before every commit.
 
-## Contact
-
-For inquiries: scoutiq12@gmail.com
-
----
-
-Built with ❤️ using Flutter
+Copyright 2026 ScoutIQ LLC.

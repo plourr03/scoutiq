@@ -1,116 +1,76 @@
-# Firebase Deployment Guide for ScoutIQ
+# Deploying scout-iq.com
 
-## Your Firebase Project Configuration
-- **Project ID**: scoutiq-94b8e
-- **Project Number**: 933278883830
-- **Hosting URL**: https://scoutiq-94b8e.firebaseapp.com (or your custom domain)
+The site is hosted on Firebase Hosting:
 
-## Quick Deployment Steps
+- **Project:** `scoutiq-94b8e`
+- **Hosting site:** `scoutiq-94b8e`
+- **Custom domain:** scout-iq.com
 
-### 1. Login to Firebase (One-time setup)
-Open a terminal and run:
-```bash
-firebase login
+Deploys are done by hand from a computer with the Firebase CLI. There is no CI.
+
+## One-time setup
+
+1. Install Node.js 22.23.4 or newer, then run `npm install` in this folder.
+2. Install the Firebase CLI (`npm install -g firebase-tools`).
+3. Run `firebase login` with the Google account that owns the project.
+
+The project ID is already set in `.firebaserc`. No keys or config files are needed to deploy, and none belong in this repository.
+
+## Check a change on a preview link first
+
 ```
-This will open a browser where you can login with the Google account that owns the Firebase project.
+firebase hosting:channel:deploy preview --expires 7d
+```
 
-### 2. Deploy Your Website
-From the project directory, run:
-```bash
-cd c:\Users\bobby\repo\scoutiq
+This builds the site and publishes it to a private preview address of the form `https://scoutiq-94b8e--preview-xxxx.web.app`. The CLI prints the exact link.
+
+- The live site is not touched.
+- Preview links tell search engines not to index them, so Lighthouse shows a lower SEO score there. That is expected.
+
+## Publish to the live site
+
+```
 firebase deploy --only hosting
 ```
 
-That's it! Your website will be deployed.
+`npm run build` runs automatically first, so what goes live is always a fresh build of the current files.
 
-## What's Already Configured
+## What the hosting settings do
 
-✅ **firebase.json** - Hosting configuration pointing to `build/web`
-✅ **.firebaserc** - Project set to `scoutiq-94b8e`
-✅ **build/web/** - Production-ready website files
-✅ **Google Search Console verification file** included
+`firebase.json` tells Firebase Hosting to:
 
-## After Deployment
+- **What it serves:** the `dist/` folder.
+- **Legal pages:** `/privacy` and `/terms` are served without `.html`. The `.html` addresses and the trailing-slash addresses redirect to them.
+- **Unknown addresses:** they show the "That page is not here." page with a real 404 status. There is no catch-all rewrite.
+- **Caching:** files in `/_astro/` (fonts, scripts, images, all with a hash in their names) are cached for a year. The old Flutter service worker is never cached, so browsers always get the cleanup version.
+- **Search Console file:** `google9273129ebdea3e62.html` is served at its exact address.
 
-Your website will be available at:
-- **Default URL**: https://scoutiq-94b8e.firebaseapp.com
-- **Custom Domain** (if configured): https://scoutiq.com
+## After a live deploy, check
 
-### Verify Your Deployment
-1. Visit your website URL
-2. Test all features:
-   - Hero section animations
-   - "Explore Our Products" button scrolling
-   - Product cards
-   - Privacy Policy link
-   - Terms of Service link
-   - "Get in Touch" email button
-3. Verify Google Search Console at: https://scoutiq-94b8e.firebaseapp.com/google9273129ebdea3e62.html
+- https://scout-iq.com loads the new version (try a private window).
+- https://scout-iq.com/privacy and https://scout-iq.com/terms load.
+- A made-up address, such as https://scout-iq.com/nothing-here, shows the not-found page with a 404.
+- https://scout-iq.com/robots.txt and https://scout-iq.com/sitemap.xml load.
+- https://scout-iq.com/google9273129ebdea3e62.html loads.
+- Lighthouse on a phone profile scores 95 or better for Performance and 100 for Accessibility, Best Practices and SEO.
 
-## Optional: Add Analytics
+## Roll back
 
-Your Firebase config is ready. To enable analytics tracking, add this to your `web/index.html`:
+In the Firebase console, open Hosting and find the release history. Choose the previous release and select **Roll back**. This takes effect in seconds and needs no rebuild.
 
-```html
-<!-- Add before closing </body> tag -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyAoGwNu4B0voD9Ak6yx7gNVRNqevIPIrgw",
-    authDomain: "scoutiq-94b8e.firebaseapp.com",
-    projectId: "scoutiq-94b8e",
-    storageBucket: "scoutiq-94b8e.firebasestorage.app",
-    messagingSenderId: "933278883830",
-    appId: "1:933278883830:web:2ed5fe431673a43650b1d7",
-    measurementId: "G-FM25YTPE25"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-```
+To go back to a specific version of the code instead, check out that commit and run `firebase deploy --only hosting`. The last Flutter version is under the tag `flutter-site-final`, but it needs the Flutter SDK to build.
 
-## Deployment Commands Reference
+## The www address
 
-```bash
-# Deploy everything
-firebase deploy
+`www.scout-iq.com` is not connected yet. To fix it:
 
-# Deploy only hosting
-firebase deploy --only hosting
+1. In the Firebase console, open Hosting and choose **Add custom domain**.
+2. Enter `www.scout-iq.com` and choose to redirect it to `scout-iq.com`.
+3. Add the DNS records Firebase shows at the domain registrar (Namecheap, Advanced DNS).
+4. Wait until the domain shows as connected.
 
-# View deployment history
-firebase hosting:channel:list
+## Search Console
 
-# Preview before deploying (creates preview URL)
-firebase hosting:channel:deploy preview
+The sitemap to submit is https://scout-iq.com/sitemap.xml.
 
-# Check deployment status
-firebase projects:list
-```
-
-## Troubleshooting
-
-**Error: "Please make sure the project exists"**
-- Run `firebase login` to authenticate
-- Verify you're logged in with the correct Google account
-
-**Error: "Permission denied"**
-- Make sure your Google account has Owner or Editor role on the Firebase project
-
-**Changes not showing up?**
-- Clear your browser cache or use incognito mode
-- Run `flutter build web --release` before deploying
-
-## Custom Domain Setup (Optional)
-
-1. Go to Firebase Console → Hosting
-2. Click "Add custom domain"
-3. Enter your domain (e.g., scoutiq.com)
-4. Follow DNS configuration steps
-5. Firebase will provide verification and SSL certificates automatically
-
-## Contact
-Questions? Email: scoutiq12@gmail.com
+The verification file stays in `public/`. Do not remove it, or the property loses its verification.

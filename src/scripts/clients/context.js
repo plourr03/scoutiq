@@ -8,7 +8,7 @@ import { httpsLink, mailto } from './links.js';
 export const copy = JSON.parse(document.getElementById('client-copy').textContent);
 export const settings = JSON.parse(document.getElementById('client-settings').textContent);
 
-// On this computer only: ?flags=emailLinkSignIn,fileStorage,stripePortal turns those switches on,
+// On this computer only: ?flags=emailLinkSignIn,appleSignIn,fileStorage,stripePortal turns those switches on,
 // so both sides of each switch can be tried on the emulators. Ignored on any real address.
 if (isLocal) {
   const asked = new URLSearchParams(location.search).get('flags');
@@ -20,7 +20,7 @@ if (isLocal) {
     saved = asked ?? '';
   }
   for (const flag of saved.split(',')) {
-    if (flag === 'emailLinkSignIn' || flag === 'fileStorage') settings[flag] = true;
+    if (['emailLinkSignIn', 'appleSignIn', 'fileStorage'].includes(flag)) settings[flag] = true;
     if (flag === 'stripePortal') settings.stripePortalUrl = 'https://billing.stripe.com/p/login/test_sample';
   }
 }
@@ -50,7 +50,15 @@ export function linked(template, href, values = {}, attrs = {}) {
 
 /** Puts a screen into <main>. After the first screen, focus moves to its heading. */
 export function render(...children) {
-  mount(main, h('div', { class: 'page-grid view' }, h('div', { class: 'view-body' }, ...children)));
+  renderScreen(h('div', { class: 'view-body' }, ...children));
+}
+
+/**
+ * The same, for a screen with its own layout (the sign-in screens): `body` goes straight into
+ * the page grid instead of the reading column.
+ */
+export function renderScreen(body, className = '') {
+  mount(main, h('div', { class: `page-grid view ${className}`.trim() }, body));
   markScrollers();
   if (state.firstRender) state.firstRender = false;
   else main.querySelector('h1')?.focus();

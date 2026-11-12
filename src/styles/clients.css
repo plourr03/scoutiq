@@ -477,12 +477,210 @@
     box-shadow: 0 1px 2px rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
   }
 }
-.trouble {
-  font-size: var(--fs-16);
+/* ---------- Sign in with Apple: Apple's rules for a custom button ---------- */
+/* Black, with Apple's own mark from its button service. The mark comes on a black square that
+   disappears into the button, so the button must stay pure black, hover included. The words are
+   in the system font, as Apple asks. Same height and width as the Google button above it. */
+.apple-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: var(--tap);
+  padding: 0 16px 0 8px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  cursor: pointer;
 }
+.apple-mark {
+  flex: none;
+  width: 30px;
+  height: 30px;
+}
+@media (hover: hover) {
+  .apple-button:hover {
+    box-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 1px 3px 1px rgb(0 0 0 / 15%);
+  }
+}
+
 .in-app {
   display: grid;
   gap: var(--s-3);
+}
+
+/* ---------- Sign-in screens: a welcome, the sign-in card, what the client area holds ---------- */
+/* Phone: welcome, card, then the list. Laptop: welcome and list on the left, the card on the
+   right, so the one thing to do is always in the same place. */
+.signin-view {
+  padding-block: var(--s-6) var(--s-9);
+}
+.signin-layout {
+  display: grid;
+  grid-column: content;
+  grid-template-areas: 'intro' 'card' 'features';
+  gap: var(--s-6);
+  align-items: start;
+}
+.signin-layout--single {
+  grid-template-areas: 'card';
+}
+.signin-intro {
+  display: grid;
+  grid-area: intro;
+  gap: var(--s-3);
+}
+.signin-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--moss);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.signin-eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--lime);
+}
+.signin-intro h1 {
+  max-width: 13ch;
+  font-size: var(--fs-48);
+}
+.signin-intro .lede {
+  max-width: 34rem;
+}
+.signin-view h1:focus {
+  outline: none;
+}
+
+.signin-card {
+  display: grid;
+  grid-area: card;
+  gap: var(--s-4);
+  width: 100%;
+  max-width: 28rem;
+  padding: var(--s-6) var(--s-5);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--lime);
+  border-radius: var(--radius-screen);
+  background: var(--app-white);
+  box-shadow: 0 1px 2px rgb(41 44 49 / 6%), 0 12px 32px rgb(41 44 49 / 8%);
+}
+.signin-card h1,
+.signin-card h2 {
+  font-size: var(--fs-36);
+}
+.signin-card .notice {
+  margin: 0;
+}
+.signin-buttons {
+  display: grid;
+  gap: var(--s-3);
+}
+.signin-buttons > * {
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+}
+.signin-small {
+  color: var(--muted);
+  font-size: var(--fs-16);
+  line-height: 1.5;
+}
+.signin-small a {
+  color: var(--charcoal);
+}
+.signin-trouble {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.signin-features {
+  display: grid;
+  grid-area: features;
+  gap: var(--s-5);
+}
+.feature-list {
+  display: grid;
+  gap: var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+.feature {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-3);
+  align-items: start;
+}
+.feature-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--cell);
+}
+.feature-text {
+  display: grid;
+  gap: 2px;
+  padding-top: 2px;
+}
+.feature-text strong {
+  font-size: var(--fs-18);
+}
+.feature-text span {
+  color: var(--muted);
+}
+.signin-private {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--muted);
+  font-size: var(--fs-16);
+}
+.signin-private img {
+  flex: none;
+  opacity: 0.7;
+}
+
+@media (min-width: 40em) {
+  .feature-list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--s-6);
+    row-gap: var(--s-5);
+  }
+}
+@media (min-width: 60em) {
+  .signin-view {
+    padding-block: var(--s-8) var(--s-10);
+  }
+  .signin-layout {
+    grid-template-areas: 'intro card' 'features card';
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+    column-gap: var(--s-9);
+    row-gap: var(--s-7);
+  }
+  .signin-layout--single {
+    grid-template-areas: 'card';
+    grid-template-columns: minmax(0, 34rem);
+    justify-content: center;
+  }
+  .signin-intro h1 {
+    font-size: var(--fs-72);
+  }
+  .signin-card {
+    padding: var(--s-7) var(--s-6);
+  }
 }
 .copy-fallback {
   width: 100%;

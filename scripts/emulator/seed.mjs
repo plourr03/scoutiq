@@ -47,23 +47,29 @@ for (const entry of fixture.clients) {
   }
 }
 
-// Made-up people to sign in as through the emulator's Google screen.
+// Made-up people to sign in as through the emulator's Google and Apple screens. The last one
+// signs in with Apple and chose "Hide My Email", so Apple gives a relay address instead.
 const people = [
   { email: 'member@sample-club.test', name: 'Jamie Rivera (Sample Club member)' },
   { email: 'both@clubs.test', name: 'Pat Morgan (member of two clubs)' },
   { email: 'member@other-club.test', name: 'Sam Lee (Other Club member)' },
   { email: 'stranger@example.test', name: 'Alex Stone (on no list)' },
   { email: 'admin@scoutiq.test', name: 'ScoutIQ admin', admin: true },
+  { email: 'coach@sample-club.test', name: 'Robin Park (Sample Club, signs in with Apple)', provider: 'apple.com' },
+  { email: 'k7m2q9x4ab@privaterelay.appleid.com', name: 'Hidden email (Apple)', provider: 'apple.com' },
 ];
 const result = await auth.importUsers(
-  people.map((p, i) => ({
-    uid: `sample-user-${i + 1}`,
-    email: p.email,
-    emailVerified: true,
-    displayName: p.name,
-    providerData: [{ providerId: 'google.com', uid: `google-sample-${i + 1}`, email: p.email, displayName: p.name }],
-    customClaims: p.admin ? { admin: true } : undefined,
-  })),
+  people.map((p, i) => {
+    const providerId = p.provider ?? 'google.com';
+    return {
+      uid: `sample-user-${i + 1}`,
+      email: p.email,
+      emailVerified: true,
+      displayName: p.name,
+      providerData: [{ providerId, uid: `${providerId.split('.')[0]}-sample-${i + 1}`, email: p.email, displayName: p.name }],
+      customClaims: p.admin ? { admin: true } : undefined,
+    };
+  }),
 );
 if (result.failureCount) {
   console.error(result.errors);
@@ -71,7 +77,7 @@ if (result.failureCount) {
 }
 
 console.log(`Seeded ${fixture.clients.length} made-up clients and ${people.length} made-up accounts into ${PROJECT}.`);
-console.log('Open http://127.0.0.1:5050/clients and choose an account on the emulator\'s Google screen.');
+console.log('Open http://127.0.0.1:5050/clients (add ?flags=appleSignIn for the Apple button) and choose an account on the emulator\'s sign-in screen.');
 
 if (process.argv.includes('--stay')) {
   console.log('Emulators are running. Press Ctrl+C to stop.');

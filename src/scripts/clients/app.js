@@ -6,16 +6,23 @@
 //   /clients/<client>/<section>     Costs, Documents, Invoices or Account
 // Every number shown comes from the database. Nothing about a client is in this code.
 import {
-  GoogleAuthProvider, getRedirectResult, isSignInWithEmailLink, onAuthStateChanged, sendSignInLinkToEmail,
+  GoogleAuthProvider, OAuthProvider, getRedirectResult, isSignInWithEmailLink, onAuthStateChanged, sendSignInLinkToEmail,
   signInWithEmailLink, signInWithPopup, signInWithRedirect, signOut,
 } from 'firebase/auth';
 import { collection, collectionGroup, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore/lite';
+import appleMark2x from '../../assets/apple/apple-mark-black@2x.png?url';
+import appleMark3x from '../../assets/apple/apple-mark-black@3x.png?url';
+import iconCosts from '../../assets/clients/icon-costs.svg?url';
+import iconDocuments from '../../assets/clients/icon-documents.svg?url';
+import iconInvoices from '../../assets/clients/icon-invoices.svg?url';
+import iconLock from '../../assets/clients/icon-lock.svg?url';
+import iconProgress from '../../assets/clients/icon-progress.svg?url';
 import gMark2x from '../../assets/google/google-g@2x.png?url';
 import gMark3x from '../../assets/google/google-g@3x.png?url';
 import { showAccount, showFinish } from './account.js';
 import { isComplete } from './account-check.js';
 import {
-  contactLink, copy, fb, heading, linked, main, markScrollers, render, settings, state,
+  contactLink, copy, fb, heading, linked, main, markScrollers, render, renderScreen, settings, state,
 } from './context.js';
 import { h, mount } from './dom.js';
 import { startFirebase } from './firebase.js';
@@ -61,8 +68,8 @@ async function start() {
   if (settings.emailLinkSignIn && isSignInWithEmailLink(fb.auth, location.href)) {
     await finishEmailLink();
   }
-  getRedirectResult(fb.auth).catch(() => {
-    state.signInError = true;
+  getRedirectResult(fb.auth).catch((error) => {
+    state.signInError = signInProblem(error);
     if (!state.user) showSignIn();
   });
 
@@ -262,9 +269,29 @@ function inAppBrowser() {
     || (/Android/.test(ua) && /; wv\)/.test(ua));
 }
 
-async function googleSignIn() {
+function providerFor(kind) {
+  if (kind === 'apple') {
+    const provider = new OAuthProvider('apple.com');
+    provider.addScope('email');
+    provider.addScope('name');
+    return provider;
+  }
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
+  return provider;
+}
+
+/**
+ * What went wrong, for the sign-in screen: the address already signs in another way (one
+ * account per address, so Google and Apple cannot both own it), or anything else.
+ */
+function signInProblem(error) {
+  return error?.code === 'auth/account-exists-with-different-credential' ? 'otherMethod' : 'failed';
+}
+
+/** Google or Apple: a pop-up on a laptop, the whole page on a phone (or when pop-ups are blocked). */
+async function providerSignIn(kind) {
+  const provider = providerFor(kind);
   const phone = matchMedia('(pointer: coarse)').matches && matchMedia('(max-width: 48em)').matches;
   if (phone) {
     store.set('sessionStorage', RETURN_KEY, location.pathname);
@@ -278,7 +305,7 @@ async function googleSignIn() {
       return signInWithRedirect(fb.auth, provider);
     }
     if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-      state.signInError = true;
+      state.signInError = signInProblem(error);
       showSignIn();
     }
   }
@@ -288,9 +315,22 @@ async function googleSignIn() {
 function googleButton(label) {
   return h(
     'button',
-    { type: 'button', class: 'gsi-button', onclick: googleSignIn },
+    { type: 'button', class: 'gsi-button', onclick: () => providerSignIn('google') },
     h('img', { class: 'gsi-mark', src: gMark2x, srcset: `${gMark2x} 2x, ${gMark3x} 3x`, width: 20, height: 20, alt: '' }),
     h('span', { class: 'gsi-text' }, label),
+  );
+}
+
+/**
+ * The Sign in with Apple button, drawn to Apple's rules for custom buttons: black, Apple's own
+ * mark (its black square disappears into the button), the words in the system font.
+ */
+function appleButton(label) {
+  return h(
+    'button',
+    { type: 'button', class: 'apple-button', onclick: () => providerSignIn('apple') },
+    h('img', { class: 'apple-mark', src: appleMark2x, srcset: `${appleMark2x} 2x, ${appleMark3x} 3x`, width: 30, height: 30, alt: '' }),
+    h('span', null, label),
   );
 }
 
@@ -333,41 +373,83 @@ function inAppNotice(t) {
   return h('div', { class: 'notice in-app' }, h('p', null, t.inAppBrowser), h('div', { class: 'actions' }, button), shown);
 }
 
+const FEATURE_ICONS = { progress: iconProgress, costs: iconCosts, documents: iconDocuments, invoices: iconInvoices };
+
+function emailLinkForm(t) {
+  const input = h('input', { id: 'signin-email', type: 'email', name: 'email', autocomplete: 'email', required: true, inputmode: 'email' });
+  return h(
+    'form',
+    {
+      class: 'email-form',
+      onsubmit: async (event) => {
+        event.preventDefault();
+        const email = input.value.trim().toLowerCase();
+        if (!email) return;
+        try {
+          await sendSignInLinkToEmail(fb.auth, email, { url: `${location.origin}/clients`, handleCodeInApp: true });
+          store.set('localStorage', EMAIL_KEY, email);
+          showLinkSent();
+        } catch {
+          state.signInError = 'failed';
+          showSignIn();
+        }
+      },
+    },
+    h('label', { for: 'signin-email' }, t.emailLabel),
+    input,
+    h('button', { type: 'submit', class: 'btn btn--secondary' }, t.emailButton),
+  );
+}
+
+/**
+ * The sign-in screen. On a laptop: what the client area holds on the left, the sign-in card on
+ * the right. On a phone: a short welcome, then the card, then what the client area holds.
+ */
 function showSignIn() {
   const t = copy.signIn;
   frame({ title: t.title });
-  const parts = [heading(t.heading), h('p', { class: 'lede' }, t.intro)];
-  if (state.signInError) parts.push(h('p', { class: 'notice', role: 'alert' }, t.error));
-  if (inAppBrowser()) parts.push(inAppNotice(t));
-  parts.push(h('div', { class: 'actions' }, googleButton(t.google)));
+  const problem = state.signInError ? (state.signInError === 'otherMethod' ? t.errorOtherMethod : t.error) : null;
 
-  if (settings.emailLinkSignIn) {
-    const input = h('input', { id: 'signin-email', type: 'email', name: 'email', autocomplete: 'email', required: true, inputmode: 'email' });
-    parts.push(h(
-      'form',
-      {
-        class: 'email-form',
-        onsubmit: async (event) => {
-          event.preventDefault();
-          const email = input.value.trim().toLowerCase();
-          if (!email) return;
-          try {
-            await sendSignInLinkToEmail(fb.auth, email, { url: `${location.origin}/clients`, handleCodeInApp: true });
-            store.set('localStorage', EMAIL_KEY, email);
-            showLinkSent();
-          } catch {
-            state.signInError = true;
-            showSignIn();
-          }
-        },
-      },
-      h('label', { for: 'signin-email' }, t.emailLabel),
-      input,
-      h('button', { type: 'submit', class: 'btn btn--secondary' }, t.emailButton),
-    ));
-  }
-  parts.push(h('p', { class: 'trouble' }, ...linked(t.trouble, contactLink())));
-  render(...parts);
+  const intro = h(
+    'div',
+    { class: 'signin-intro' },
+    h('p', { class: 'signin-eyebrow' }, t.eyebrow),
+    h('h1', { tabindex: '-1' }, t.heading),
+    h('p', { class: 'lede' }, t.intro),
+  );
+
+  const card = h(
+    'section',
+    { class: 'signin-card', 'aria-labelledby': 'signin-card-heading' },
+    h('h2', { id: 'signin-card-heading' }, t.cardHeading),
+    h('p', { class: 'signin-card-intro' }, settings.appleSignIn ? t.cardIntro : t.cardIntroGoogleOnly),
+    problem ? h('p', { class: 'notice', role: 'alert' }, problem) : null,
+    inAppBrowser() ? inAppNotice(t) : null,
+    h('div', { class: 'signin-buttons' }, googleButton(t.google), settings.appleSignIn ? appleButton(t.apple) : null),
+    settings.emailLinkSignIn ? emailLinkForm(t) : null,
+    h('p', { class: 'signin-small' }, ...linked(t.privacy, '/privacy')),
+    h('p', { class: 'signin-small signin-trouble' }, ...linked(t.trouble, contactLink())),
+  );
+
+  const features = h(
+    'section',
+    { class: 'signin-features', 'aria-labelledby': 'signin-features-heading' },
+    h('h2', { id: 'signin-features-heading', class: 'vh' }, t.featuresLabel),
+    h(
+      'ul',
+      { class: 'feature-list' },
+      t.features.map((f) =>
+        h(
+          'li',
+          { class: 'feature' },
+          h('span', { class: 'feature-icon' }, h('img', { src: FEATURE_ICONS[f.icon], width: 24, height: 24, alt: '' })),
+          h('span', { class: 'feature-text' }, h('strong', null, f.title), h('span', null, f.text)),
+        )),
+    ),
+    h('p', { class: 'signin-private' }, h('img', { src: iconLock, width: 20, height: 20, alt: '' }), h('span', null, t.private)),
+  );
+
+  renderScreen(h('div', { class: 'signin-layout' }, intro, card, features), 'signin-view');
 }
 
 function showLinkSent() {
@@ -414,16 +496,29 @@ async function finishEmailLink() {
 function showNotLinked() {
   const t = copy.notLinked;
   frame({ title: t.heading, pageHasSignOut: true });
-  render(
-    heading(t.heading),
-    h('p', { class: 'lede' }, t.body),
-    h('p', { class: 'signed-in-as' }, fill(t.signedInAs, { email: state.user.email ?? '' })),
+  const email = state.user.email ?? '';
+  // Sign in with Apple can hide the real address behind one of Apple's relay addresses.
+  const hidden = /@privaterelay\.appleid\.com$/i.test(email);
+  renderScreen(
     h(
       'div',
-      { class: 'actions' },
-      h('a', { class: 'btn btn--primary', href: contactLink() }, t.emailButton),
-      h('button', { type: 'button', class: 'btn btn--secondary', onclick: doSignOut }, t.signOut),
+      { class: 'signin-layout signin-layout--single' },
+      h(
+        'section',
+        { class: 'signin-card' },
+        h('h1', { tabindex: '-1' }, t.heading),
+        h('p', null, t.body),
+        h('p', { class: 'signed-in-as' }, fill(t.signedInAs, { email })),
+        hidden ? h('p', { class: 'notice' }, t.hiddenEmail) : null,
+        h(
+          'div',
+          { class: 'signin-buttons' },
+          h('a', { class: 'btn btn--primary', href: contactLink() }, t.emailButton),
+          h('button', { type: 'button', class: 'btn btn--secondary', onclick: doSignOut }, t.signOut),
+        ),
+      ),
     ),
+    'signin-view',
   );
 }
 

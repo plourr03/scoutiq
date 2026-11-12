@@ -1,9 +1,11 @@
 ---
 // Footer on Charcoal: dark-mode logo, place, legal links at a comfortable size,
-// a plain Back to top link and the copyright line.
+// a plain Back to top link and the copyright line. When switched on in settings, a Client sign in
+// link sits just above Back to top (the only place it appears on the public site).
 import { Picture } from 'astro:assets';
 import logo from '../assets/logo/scoutiq-logo-dark.png';
 import site from '../copy/site.json';
+import settings from '../settings.json';
 
 const logoHeight = 56;
 const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
@@ -30,6 +32,7 @@ const copy = site.footer;
       <ul>
         <li><a href="/privacy">{copy.privacy}</a></li>
         <li><a href="/terms">{copy.terms}</a></li>
+        {settings.clientSignIn.enabled && <li><a href={settings.clientSignIn.href}>{site.clientSignIn}</a></li>}
         <li><a href="#top">{copy.backToTop}</a></li>
       </ul>
     </nav>

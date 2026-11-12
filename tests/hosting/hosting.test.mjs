@@ -78,7 +78,22 @@ test('no public page loads the client script or mentions Firebase', () => {
     const html = readFileSync(new URL(page, dist), 'utf8');
     for (const script of clientScripts) assert.ok(!html.includes(script), `${page} loads ${script}`);
     assert.ok(!/firebase/i.test(html), `${page} mentions firebase`);
-    assert.ok(!html.includes('/clients'), `${page} links to /clients`);
+  }
+});
+
+test('the Client sign in link is in the footer only, and only when switched on', () => {
+  const settings = JSON.parse(readFileSync(new URL('src/settings.json', root), 'utf8'));
+  const pages = readdirSync(dist).filter((f) => f.endsWith('.html') && f !== 'clients.html' && !f.startsWith('google'));
+  for (const page of pages) {
+    const html = readFileSync(new URL(page, dist), 'utf8');
+    const footer = html.match(/<footer[\s\S]*?<\/footer>/)?.[0] ?? '';
+    const everywhere = html.split('/clients').length - 1;
+    if (settings.clientSignIn.enabled) {
+      assert.equal(everywhere, 1, `${page} mentions /clients once`);
+      assert.match(footer, /<a href="\/clients"[^>]*>Client sign in<\/a>/, `${page} has the link in its footer`);
+    } else {
+      assert.equal(everywhere, 0, `${page} links to /clients while the switch is off`);
+    }
   }
 });
 

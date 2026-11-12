@@ -3,7 +3,7 @@
   "contactSubject": "A project for ScoutIQ",
   "legalLastUpdated": "2026-11-11",
   "clientSignIn": {
-    "enabled": false,
+    "enabled": true,
     "href": "/clients"
   },
   "clientArea": {

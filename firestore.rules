@@ -4,8 +4,10 @@ rules_version = '2';
 //
 // Everything is denied unless a rule below allows it.
 // A member is a signed-in person with a verified email whose lowercase address has an entry
-// under clients/{clientId}/members/{email}. Member entries are written only by the admin
+// under clients/{clientId}/clientMembers/{email}. Member entries are written only by the admin
 // import script, which stores every address in lowercase and refuses any that is not.
+// The collection has a name only the client area uses, so the lookup below can never reach
+// a "members" collection that belongs to anything else in this database.
 // The admin is a person with a verified email and the custom claim admin == true, set only by
 // the admin script.
 // No browser can write client data. The one exception is a member editing their own
@@ -34,7 +36,7 @@ service cloud.firestore {
     }
 
     function memberPath(clientId) {
-      return /databases/$(database)/documents/clients/$(clientId)/members/$(myEmail());
+      return /databases/$(database)/documents/clients/$(clientId)/clientMembers/$(myEmail());
     }
 
     function isMember(clientId) {
@@ -52,7 +54,7 @@ service cloud.firestore {
       allow write: if false;
 
       // The member list. A member may read their own entry; only the admin may list.
-      match /members/{email} {
+      match /clientMembers/{email} {
         allow get: if isAdmin() || (hasVerifiedEmail() && email.lower() == myEmail());
         allow list: if isAdmin();
         allow write: if false;
@@ -83,6 +85,7 @@ service cloud.firestore {
         allow update: if docId == 'details'
           && isMember(clientId)
           && validAccount(request.resource.data)
+          && completeAccount(request.resource.data)
           && request.resource.data.updatedBy == myEmail()
           && request.resource.data.updatedAt == request.time
           && changeRecordedWith(clientId, request.resource.data.lastChangeId);
@@ -104,7 +107,7 @@ service cloud.firestore {
 
     // The client chooser asks for the member entries that carry the signed-in address.
     // Both sides are compared in lowercase.
-    match /{path=**}/members/{email} {
+    match /{path=**}/clientMembers/{email} {
       allow list: if isAdmin()
         || (hasVerifiedEmail() && resource.data.email.lower() == myEmail());
     }
@@ -114,10 +117,21 @@ service cloud.firestore {
       return value is string && value.size() <= max;
     }
 
-    // Card and bank numbers do not belong anywhere in here: no run of 13 or more digits, even
-    // with spaces, dots or hyphens between them.
+    // Every account field is a single line of visible text: no line breaks, tabs or other
+    // control characters, and no invisible formatting characters such as a right-to-left
+    // override. (?s) lets the pattern look across line breaks, so none can hide what follows.
+    function oneLine(value) {
+      return value is string && !value.matches('(?s).*[\\p{Cc}\\p{Cf}].*');
+    }
+
+    // Card and bank numbers do not belong anywhere in here: no run of 13 or more digits (in
+    // any script), even with up to two spaces, dots, slashes, underscores or hyphens between.
+    function noLongNumber(value) {
+      return !value.matches('(?s).*(\\p{Nd}[ ./_-]{0,2}){12}\\p{Nd}.*');
+    }
+
     function plainText(value, max) {
-      return shortText(value, max) && !value.matches('.*([0-9][ .-]?){12}[0-9].*');
+      return shortText(value, max) && oneLine(value) && noLongNumber(value);
     }
 
     function validAddress(a) {
@@ -148,6 +162,8 @@ service cloud.firestore {
         && plainText(d.billingName, 120)
         && plainText(d.contactName, 120)
         && shortText(d.email, 254)
+        && oneLine(d.email)
+        && noLongNumber(d.email)
         && d.email.matches('[^@\\s]+@[^@\\s]+[.][^@\\s]+')
         && shortText(d.phone, 40)
         && d.phone.matches('[0-9 ()+.-]*')
@@ -155,6 +171,34 @@ service cloud.firestore {
         && validAddress(d.mailingAddress)
         && validPreferences(d.preferences)
         && d.lastChangeId is string;
+    }
+
+    // Filled in: at least one character that is not a space.
+    function filled(value) {
+      return value is string && value.matches('.*[^\\s].*');
+    }
+
+    // What invoicing needs, the same as src/scripts/clients/account-check.js. The import may
+    // create an account with blanks (that is how a client starts), but a member's save must
+    // leave every one of these filled and valid. The second address line stays optional.
+    function completeAccount(d) {
+      let a = d.mailingAddress;
+      let p = d.preferences;
+      return filled(d.billingName)
+        && filled(d.contactName)
+        && filled(d.email)
+        // A whole phone number, with the area code.
+        && d.phone.replace('[^0-9]', '').size() >= 10
+        && filled(a.get('line1', ''))
+        && filled(a.get('city', ''))
+        && filled(a.get('state', ''))
+        // A ZIP code: 5 digits, or ZIP+4.
+        && a.get('postalCode', '').matches('[0-9]{5}(-[0-9]{4})?')
+        && p.appToolsInvoice != ''
+        && p.payBy != ''
+        // "Other" needs a few words to say what instead.
+        && (p.appToolsInvoice != 'other' || filled(p.get('appToolsNote', '')))
+        && (p.payBy != 'other' || filled(p.get('payNote', '')));
     }
 
     // The account fields by their own names (every name is different), for comparing a save

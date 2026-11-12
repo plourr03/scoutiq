@@ -7,7 +7,10 @@ import { clientWrites, fileUploads } from './client-data.mjs';
 
 // Everything under a client that the import owns. Account details and the account change
 // record belong to the client and are never overwritten or removed here.
-const OWNED = ['members', 'data', 'buildLog', 'documents', 'invoices'];
+// Member entries used to live in "members"; any left there are removed, so running the import
+// moves them to "clientMembers".
+const OLD_MEMBERS = 'members';
+const OWNED = ['clientMembers', OLD_MEMBERS, 'data', 'buildLog', 'documents', 'invoices'];
 
 /**
  * Compares a client entry with what is in the database (and in Storage, when a bucket is given).
@@ -72,7 +75,12 @@ export function describePlan(plan) {
       lines.push(`  ~ change  ${op.path}`);
       for (const d of op.diff) lines.push(`              ${d.field}: ${show(d.from)} -> ${show(d.to)}`);
     }
-    if (op.kind === 'delete') lines.push(`  - remove  ${op.path}${op.path.includes('/members/') ? '   (this person loses access)' : ''}`);
+    if (op.kind === 'delete') {
+      let why = '';
+      if (op.path.includes(`/${OLD_MEMBERS}/`)) why = '   (old place; the entry now lives in clientMembers)';
+      else if (op.path.includes('/clientMembers/')) why = '   (this person loses access)';
+      lines.push(`  - remove  ${op.path}${why}`);
+    }
     if (op.kind === 'keep') lines.push(`  = keep    ${op.path} (${op.why})`);
   }
   for (const f of plan.files) {

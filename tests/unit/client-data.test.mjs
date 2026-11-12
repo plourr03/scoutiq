@@ -87,3 +87,38 @@ describe('file storage switch', () => {
     assert.equal(filesBlocked({ entries: linksOnly, live: true, fileStorage: false }), false);
   });
 });
+
+describe('client ids, notes and account text', () => {
+  it('refuses a client id that is not lowercase letters, digits and hyphens', () => {
+    for (const id of ['Sample-Club', 'sample_club', 'sample.club', '../x', 'a/b', 'sample club', '-x', 'x', '', 'a'.repeat(41)]) {
+      assert.match(problems((e) => { e.id = id; }), /id must be lowercase letters, digits and hyphens/, id);
+    }
+    assert.equal(problems((e) => { e.id = 'sample-club-2'; }), '');
+  });
+
+  it('never stores notes (keys starting with _), however deep', () => {
+    const entry = sample();
+    entry.client._note = 'top';
+    entry.client.contact._note = 'nested';
+    entry.costs.maintenance._why = 'nested';
+    entry.costs.estimate.rows[0]._row = 'in a list';
+    entry.buildLog[0]._note = 'log';
+    entry.documents[0]._note = 'doc';
+    entry.invoices[0]._note = 'invoice';
+    assert.deepEqual(checkClient(entry), []);
+    const stored = JSON.stringify(clientWrites(entry, new Date('2026-11-01T00:00:00Z')));
+    assert.ok(!/"_/.test(stored), 'no underscore keys are written');
+    assert.match(stored, /Sample Club/);
+  });
+
+  it('refuses line breaks, control and invisible characters, and hidden card numbers, in account text', () => {
+    assert.match(problems((e) => { e.account.mailingAddress.city = 'Sampletown\nx'; }), /single lines/);
+    assert.match(problems((e) => { e.account.billingName = 'Sample\tClub'; }), /single lines/);
+    assert.match(problems((e) => { e.account.contactName = 'Jamie \u202ERivera'; }), /single lines/);
+    assert.match(problems((e) => { e.account.preferences.payNote = '4242/4242/4242/4242'; }), /long run of digits/);
+    assert.match(problems((e) => { e.account.preferences.payNote = '4242  4242  4242  4242'; }), /long run of digits/);
+    assert.match(problems((e) => { e.account.preferences.payNote = '\uFF14\uFF12'.repeat(6) + '\uFF14'; }), /long run of digits/);
+    assert.match(problems((e) => { e.account.email = '4242424242424242@exp1229.test'; }), /long run of digits/);
+    assert.equal(problems((e) => { e.account.preferences.payNote = 'Invoice 2027-01 by check, ZIP 54901'; }), '');
+  });
+});

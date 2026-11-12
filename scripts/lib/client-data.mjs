@@ -14,9 +14,11 @@ export const INVOICE_STATUSES = ['due', 'paid', 'void'];
 export const APP_TOOLS_INVOICE = ['', 'after-season', 'with-maintenance', 'other'];
 export const PAY_BY = ['', 'online', 'check', 'other'];
 
-// The security rules refuse 13 or more digits in a row (even with spaces, dots or hyphens
-// between) in account text, so card and bank numbers cannot be stored.
-const LONG_NUMBER = /([0-9][ .-]?){12}[0-9]/;
+// The security rules refuse 13 or more digits in a row (in any script, even with up to two
+// spaces, dots, slashes, underscores or hyphens between) in account text, so card and bank
+// numbers cannot be stored. They also refuse line breaks, control and invisible characters.
+const LONG_NUMBER = /(\p{Nd}[ ./_-]{0,2}){12}\p{Nd}/u;
+const NOT_ONE_LINE = /[\p{Cc}\p{Cf}]/u;
 
 const isInt = (n) => Number.isInteger(n) && n >= 0;
 const isText = (v, max) => typeof v === 'string' && v.length <= max;
@@ -153,10 +155,13 @@ export function checkClient(entry) {
     if (!/^[0-9 ()+.-]*$/.test(acc.phone ?? '') || (acc.phone ?? '').replace(/\D/g, '').length > 15) {
       errors.push(where('account.phone may hold only digits, spaces and + ( ) . - (at most 15 digits)'));
     }
-    const freeText = [acc.billingName, acc.contactName, ...Object.values(acc.mailingAddress ?? {}),
+    const freeText = [acc.billingName, acc.contactName, acc.email, ...Object.values(acc.mailingAddress ?? {}),
       acc.preferences?.appToolsNote, acc.preferences?.payNote];
     if (freeText.some((v) => typeof v === 'string' && LONG_NUMBER.test(v))) {
       errors.push(where('account holds a long run of digits; card and bank numbers never go here'));
+    }
+    if ([...freeText, acc.phone].some((v) => typeof v === 'string' && NOT_ONE_LINE.test(v))) {
+      errors.push(where('account text must be single lines, with no line breaks, tabs or invisible characters'));
     }
     const addr = acc.mailingAddress ?? {};
     const addrLimits = { line1: 120, line2: 120, city: 80, state: 40, postalCode: 20 };
@@ -194,8 +199,15 @@ export function normalAccount(acc = {}) {
   };
 }
 
-// Keys starting with an underscore are notes for whoever edits the file; they are not stored.
-const withoutNotes = (obj) => Object.fromEntries(Object.entries(obj).filter(([k]) => !k.startsWith('_')));
+// Keys starting with an underscore are notes for whoever edits the file. They are never stored,
+// at any depth: members can read everything stored under their client.
+function withoutNotes(value) {
+  if (Array.isArray(value)) return value.map(withoutNotes);
+  if (value && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+    return Object.fromEntries(Object.entries(value).filter(([k]) => !k.startsWith('_')).map(([k, v]) => [k, withoutNotes(v)]));
+  }
+  return value;
+}
 
 /**
  * The writes for one client, as [path, data] pairs. `now` is the timestamp to stamp on the
@@ -204,9 +216,9 @@ const withoutNotes = (obj) => Object.fromEntries(Object.entries(obj).filter(([k]
 export function clientWrites(entry, now) {
   const base = `clients/${entry.id}`;
   const writes = [[base, withoutNotes({ ...entry.client })]];
-  for (const email of entry.members ?? []) writes.push([`${base}/members/${email}`, { email }]);
+  for (const email of entry.members ?? []) writes.push([`${base}/clientMembers/${email}`, { email }]);
   if (entry.costs) writes.push([`${base}/data/costs`, withoutNotes(entry.costs)]);
-  for (const { id, ...line } of entry.buildLog ?? []) writes.push([`${base}/buildLog/${id}`, line]);
+  for (const { id, ...line } of entry.buildLog ?? []) writes.push([`${base}/buildLog/${id}`, withoutNotes(line)]);
   if (entry.account) {
     writes.push([
       `${base}/account/details`,
@@ -214,12 +226,12 @@ export function clientWrites(entry, now) {
     ]);
   }
   for (const { id, file, url, ...doc } of entry.documents ?? []) {
-    const data = { ...doc };
+    const data = withoutNotes({ ...doc });
     if (file) Object.assign(data, { path: storagePath(entry.id, file), fileName: path.posix.basename(file) });
     else data.url = url;
     writes.push([`${base}/documents/${id}`, data]);
   }
-  for (const { id, ...inv } of entry.invoices ?? []) writes.push([`${base}/invoices/${id}`, inv]);
+  for (const { id, ...inv } of entry.invoices ?? []) writes.push([`${base}/invoices/${id}`, withoutNotes(inv)]);
   return writes;
 }
 

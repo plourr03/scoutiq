@@ -66,10 +66,22 @@ describe('import plan', () => {
     const next = await plan(entry);
     const lines = describePlan(next).join('\n');
     assert.match(lines, /change {2}clients\/sample-club\n.*statusLine: "Design is done and the pages are going up\. Registration is next\." -> "Registration is open\."/);
-    assert.match(lines, /remove {2}clients\/sample-club\/members\/coach@sample-club\.test {3}\(this person loses access\)/);
+    assert.match(lines, /remove {2}clients\/sample-club\/clientMembers\/coach@sample-club\.test {3}\(this person loses access\)/);
     assert.match(lines, /remove {2}clients\/sample-club\/buildLog\/b3/);
     await applyPlan({ db, bucket, plan: next });
-    assert.equal((await db.doc('clients/sample-club/members/coach@sample-club.test').get()).exists, false);
+    assert.equal((await db.doc('clients/sample-club/clientMembers/coach@sample-club.test').get()).exists, false);
+  });
+
+  it('moves member entries from the old "members" collection to clientMembers', async () => {
+    await applyPlan({ db, bucket, plan: await plan(sample()) });
+    // An entry left in the old place, as written before the rename.
+    await db.doc('clients/sample-club/members/member@sample-club.test').set({ email: 'member@sample-club.test' });
+    const next = await plan(sample());
+    const lines = describePlan(next).join('\n');
+    assert.match(lines, /remove {2}clients\/sample-club\/members\/member@sample-club\.test {3}\(old place; the entry now lives in clientMembers\)/);
+    await applyPlan({ db, bucket, plan: next });
+    assert.equal((await db.collection('clients/sample-club/members').get()).size, 0);
+    assert.equal((await db.doc('clients/sample-club/clientMembers/member@sample-club.test').get()).exists, true);
   });
 
   it('never overwrites account details the client has changed', async () => {

@@ -1,8 +1,9 @@
 // The read-only screens: Overview, Costs, Documents and Invoices.
 // Every number and name comes from the database; nothing about a client is in this code.
+import { isComplete } from './account-check.js';
 import { h } from './dom.js';
 import {
-  contactLink, copy, heading, linked, mailto, newTabNote, proposedLabel, render, settings, sheetTable, state, strip,
+  contactLink, copy, heading, httpsLink, linked, mailto, newTabNote, proposedLabel, render, settings, sheetTable, state, strip,
 } from './context.js';
 import {
   buildLineCents, estimateTotals, fill, hourlyCents, longDate, maintenanceCents, money, shortDate, sum,
@@ -24,16 +25,21 @@ export function showOverview(id, data) {
   const t = copy.overview;
   const { client } = data;
   const contact = client.contact ?? {};
+  const liveSite = httpsLink(client.liveSite?.url);
+  const emailLink = mailto(contact.email, client.projectName);
   render(
     heading(copy.sections.overview),
+    state.admin && !isComplete(data.account)
+      ? strip(...linked(copy.account.notFinishedLink, `/clients/${id}/account`, {}, { 'data-nav': true }))
+      : null,
     agreementStrip(id, data, true),
     h(
       'section',
       { class: 'block', 'aria-labelledby': 'project' },
       h('h2', { id: 'project' }, client.projectName),
       h('p', null, client.statusLine),
-      client.liveSite?.url
-        ? h('p', null, `${t.liveSite}: `, h('a', { href: client.liveSite.url, rel: 'noopener' }, client.liveSite.label || client.liveSite.url))
+      liveSite
+        ? h('p', null, `${t.liveSite}: `, h('a', { href: liveSite, rel: 'noopener' }, client.liveSite.label || liveSite))
         : null,
     ),
     client.goals?.length
@@ -49,7 +55,7 @@ export function showOverview(id, data) {
       'section',
       { class: 'block', 'aria-labelledby': 'reach' },
       h('h2', { id: 'reach' }, t.reach),
-      contact.email ? h('p', null, `${t.email}: `, h('a', { href: mailto(contact.email, client.projectName) }, contact.email)) : null,
+      contact.email ? h('p', null, `${t.email}: `, emailLink ? h('a', { href: emailLink }, contact.email) : contact.email) : null,
       contact.phone ? h('p', null, `${t.phone}: `, h('a', { href: `tel:${contact.phone.replace(/[^\d+]/g, '')}` }, contact.phone)) : null,
     ),
   );
@@ -188,14 +194,19 @@ export function showDocuments(id, data, openFile) {
   const t = copy.documents;
   const { documents } = data;
   const items = documents.map((d) => {
-    const errorLine = h('p', { class: 'notice', role: 'alert', hidden: true }, t.fileError);
+    const errorLine = h('p', { class: 'notice', role: 'alert', hidden: true }, ...linked(t.fileError, contactLink()));
     let actions;
-    if (d.url) {
-      actions = h('div', { class: 'actions' }, h('a', { class: 'btn btn--secondary', href: d.url, target: '_blank', rel: 'noopener noreferrer' }, t.view, newTabNote()));
+    const link = httpsLink(d.url);
+    if (link) {
+      actions = h('div', { class: 'actions' }, h('a', { class: 'btn btn--secondary', href: link, target: '_blank', rel: 'noopener noreferrer' }, t.view, newTabNote()));
     } else if (d.path && settings.fileStorage) {
-      const use = (mode) => async (event) => {
+      let busy = false;
+      const use = (mode) => async () => {
+        if (busy) return;
+        busy = true;
         errorLine.hidden = true;
-        const ok = await openFile(d, mode, event.currentTarget);
+        const ok = await openFile(d, mode);
+        busy = false;
         if (!ok) errorLine.hidden = false;
       };
       actions = h(
@@ -268,11 +279,13 @@ export function showInvoices(id, { client, invoices }) {
               h('p', { class: 'meta' }, longDate(v.date), ' ', h('span', { class: `status status--${v.status}` }, t.statuses[v.status] ?? '')),
               h('p', null, v.covers),
               h('p', { class: 'amount' }, h('span', { class: 'vh' }, `${t.amount}: `), money(v.amountCents)),
-              h(
-                'div',
-                { class: 'actions' },
-                h('a', { class: 'btn btn--secondary', href: v.url, target: '_blank', rel: 'noopener noreferrer' }, v.status === 'due' ? t.viewAndPay : t.view, newTabNote()),
-              ),
+              httpsLink(v.url)
+                ? h(
+                    'div',
+                    { class: 'actions' },
+                    h('a', { class: 'btn btn--secondary', href: httpsLink(v.url), target: '_blank', rel: 'noopener noreferrer' }, v.status === 'due' ? t.viewAndPay : t.view, newTabNote()),
+                  )
+                : null,
             ),
           ),
         )

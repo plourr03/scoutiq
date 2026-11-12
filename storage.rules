@@ -27,13 +27,16 @@ service firebase.storage {
 
     function isMember(clientId) {
       return hasVerifiedEmail()
-        && firestore.exists(/databases/(default)/documents/clients/$(clientId)/members/$(request.auth.token.email.lower()));
+        && firestore.exists(/databases/(default)/documents/clients/$(clientId)/clientMembers/$(request.auth.token.email.lower()));
     }
 
     // The file really sits in this client's folder: its full name starts there and has no
     // "." or ".." parts that could step into another client's folder.
     function insideClient(clientId) {
-      return resource.name.matches('clients/' + clientId + '/.+')
+      // The id goes into a pattern below, so it must be plain first (the import allows only
+      // lowercase letters, digits and hyphens).
+      return clientId.matches('[a-z0-9][a-z0-9-]{1,39}')
+        && resource.name.matches('clients/' + clientId + '/.+')
         && !resource.name.matches('(.*/)?[.]{1,2}(/.*)?');
     }
 

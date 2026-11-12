@@ -3,13 +3,23 @@ node_modules/
 dist/
 .astro/
 
-# Firebase CLI deploy cache
+# Firebase CLI deploy cache, and the emulators' own copy of firebase.json
+# (scripts/emulator/local-config.mjs writes it)
 .firebase/
+firebase.local.json
 
-# Secrets: service account keys and environment files must never be committed
+# Claude Code's local folder (worktrees, settings)
+.claude/
+
+# Secrets: service account keys and environment files must never be committed.
+# The last two match the names the Google Cloud console gives downloaded keys
+# (project id plus a 12 character key id) and the usual hand-picked names.
 *firebase-adminsdk*.json
 serviceAccountKey.json
 *-service-account*.json
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
+key.json
+*credentials*.json
 .env
 .env.*
 

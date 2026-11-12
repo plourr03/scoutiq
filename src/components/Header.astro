@@ -1,15 +1,17 @@
 ---
-// Site header. Desktop: horizontal logo, three links, Email us button.
-// Phone: logo, Email us, and a Menu built on <details> so it works without JavaScript.
-// Its label reads Close while the menu is open.
+// Site header. Desktop: horizontal logo, three links (plus Client sign in, last, when switched
+// on), Email us button. Phone: logo, Email us, and a Menu built on <details> so it works
+// without JavaScript, holding the same links. Its label reads Close while the menu is open.
 import { Picture } from 'astro:assets';
 import logo from '../assets/logo/scoutiq-logo-horizontal-light.png';
 import site from '../copy/site.json';
 import settings from '../settings.json';
 
 const mailto = `mailto:${settings.contactEmail}?subject=${encodeURIComponent(settings.contactSubject)}`;
-// The Client sign in link lives in the footer only, never here.
-const links = site.nav;
+// Client sign in is a plain link like the others, never a button, so Email us stays the one to see.
+const links = settings.clientSignIn.enabled
+  ? [...site.nav, { label: site.clientSignIn, href: settings.clientSignIn.href }]
+  : site.nav;
 const logoHeight = 36;
 const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
 ---
@@ -163,6 +165,14 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
     .logo :global(img) {
       height: 2.25rem;
     }
+    .cta {
+      padding-inline: var(--s-4);
+    }
+  }
+
+  /* The four links and Email us need about 800 px beside the logo, so the Menu button stays
+     until 56em (896 px); below that the header would wrap onto two rows. */
+  @media (min-width: 56em) {
     .nav-wide {
       display: block;
       margin-inline-start: auto;
@@ -191,9 +201,6 @@ const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
     }
     .actions {
       margin-inline-start: var(--s-3);
-    }
-    .cta {
-      padding-inline: var(--s-4);
     }
     .menu {
       display: none;

@@ -3,6 +3,7 @@
 import { h, mount } from './dom.js';
 import { isLocal } from './firebase.js';
 import { fill } from './format.js';
+import { httpsLink, mailto } from './links.js';
 
 export const copy = JSON.parse(document.getElementById('client-copy').textContent);
 export const settings = JSON.parse(document.getElementById('client-settings').textContent);
@@ -31,7 +32,7 @@ export const main = document.getElementById('main');
 export const heading = (text) => h('h1', { tabindex: '-1' }, text);
 export const strip = (...content) => h('p', { class: 'strip' }, ...content);
 export const proposedLabel = (client) => (client.agreement?.signed ? null : h('p', { class: 'proposed' }, copy.proposed));
-export const mailto = (email, subject) => `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+export { httpsLink, mailto };
 export const contactLink = () => mailto(settings.contactEmail, settings.contactSubject);
 export const newTabNote = () => h('span', { class: 'vh' }, ` ${copy.documents.newTab}`);
 

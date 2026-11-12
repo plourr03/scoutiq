@@ -12,7 +12,8 @@ import {
 import { collection, collectionGroup, doc, getDoc, getDocs, orderBy, query, where } from 'firebase/firestore/lite';
 import gMark2x from '../../assets/google/google-g@2x.png?url';
 import gMark3x from '../../assets/google/google-g@3x.png?url';
-import { showAccount } from './account.js';
+import { showAccount, showFinish } from './account.js';
+import { isComplete } from './account-check.js';
 import {
   contactLink, copy, fb, heading, linked, main, markScrollers, render, settings, state,
 } from './context.js';
@@ -130,6 +131,13 @@ async function route() {
 
     const data = await loadClient(id);
     if (!data) return navigate('/clients', true);
+    // Until the details needed for invoicing are complete, a member sees only the screen that
+    // asks for them, whatever address they open. Sign out and Email us stay within reach.
+    // The admin is never held here.
+    if (!state.admin && !isComplete(data.account)) {
+      frame({ title: copy.finish.heading, clientId: id, clientName: data.client.name, tabs: false });
+      return showFinish(id, data, () => navigate(`/clients/${id}`, true));
+    }
     frame({ title: copy.sections[section], clientId: id, clientName: data.client.name, section });
     if (section === 'costs') return showCosts(id, data);
     if (section === 'documents') return showDocuments(id, data, openDocument);
@@ -141,9 +149,26 @@ async function route() {
   }
 }
 
-async function openDocument(d, mode) {
-  const { openFile } = await import('./files.js');
-  return openFile(fb.app, d, mode);
+// The tab for View opens at once, while the click still counts (browsers block windows opened
+// later), and says what is happening, so it is never just a blank window.
+function openDocument(d, mode) {
+  const tab = mode === 'view' ? window.open('', '_blank') : null;
+  if (tab) {
+    try {
+      tab.document.title = copy.documents.opening;
+      tab.document.body.textContent = copy.documents.opening;
+      // The document's tab has no way back to this page.
+      tab.opener = null;
+    } catch {
+      // Nothing to show if the browser keeps the new tab to itself; the file still arrives.
+    }
+  }
+  return import('./files.js')
+    .then(({ openFile }) => openFile(fb.app, d, mode, tab, copy.documents.downloadedInstead))
+    .catch(() => {
+      if (tab && !tab.closed) tab.close();
+      return false;
+    });
 }
 
 // ---------- Data ----------
@@ -156,7 +181,7 @@ async function loadAccess() {
   }
   const email = state.user.email?.toLowerCase();
   if (!email || !state.user.emailVerified) return (state.access = []);
-  const snap = await getDocs(query(collectionGroup(fb.db, 'members'), where('email', '==', email)));
+  const snap = await getDocs(query(collectionGroup(fb.db, 'clientMembers'), where('email', '==', email)));
   const ids = snap.docs.map((d) => d.ref.parent.parent.id);
   const clients = await Promise.all(ids.map(async (id) => {
     const c = await getDoc(doc(fb.db, 'clients', id));
@@ -193,12 +218,12 @@ async function loadClient(id) {
 }
 
 // ---------- Page frame: header, section tabs, title ----------
-function frame({ title, clientId = null, clientName = '', section = null, pageHasSignOut = false }) {
+function frame({ title, clientId = null, clientName = '', section = null, pageHasSignOut = false, tabs = true }) {
   document.title = [title, clientName, copy.titleSuffix].filter(Boolean).join(' | ');
   headerName.textContent = clientName;
   adminBadge.hidden = !(state.admin && clientId);
   signOutButton.hidden = !state.user || pageHasSignOut;
-  if (!clientId) {
+  if (!clientId || !tabs) {
     sectionNav.hidden = true;
     return;
   }

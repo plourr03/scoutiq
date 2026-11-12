@@ -116,7 +116,9 @@
     "download": "Download",
     "newTab": "(opens in a new tab)",
     "notOnline": "Not available online yet. [Email us] for a copy.",
-    "fileError": "That file did not open. Please try again."
+    "fileError": "This document could not be opened. Please try again, or [email us] for a copy.",
+    "opening": "Opening the document…",
+    "downloadedInstead": "The document downloaded instead of opening here. You can close this tab."
   },
   "invoices": {
     "number": "Invoice {number}",
@@ -178,6 +180,18 @@
     "noCardNumbers": "Please leave out card and bank numbers. We never need them here.",
     "phoneFormat": "Use only digits, spaces and + ( ) . - in the phone number.",
     "emailFormat": "Enter a whole email address, like name@example.com.",
-    "required": "Please fill this in."
+    "required": "Please fill this in.",
+    "phoneDigits": "Enter the whole phone number, with the area code.",
+    "zipFormat": "Enter a 5 digit ZIP code, like 54901.",
+    "choose": "Please choose one.",
+    "noteNeeded": "Please tell us a little more.",
+    "notFinished": "Account not finished yet.",
+    "notFinishedLink": "[Account] not finished yet."
+  },
+  "finish": {
+    "heading": "Finish setting up your account",
+    "lede": "We need these so your invoices reach the right person and place. It takes about a minute.",
+    "save": "Save and continue",
+    "questions": "Questions? [Email us]."
   }
 }

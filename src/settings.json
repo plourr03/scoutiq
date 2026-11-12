@@ -5,5 +5,10 @@
   "clientSignIn": {
     "enabled": false,
     "href": "/clients"
+  },
+  "clientArea": {
+    "emailLinkSignIn": false,
+    "fileStorage": true,
+    "stripePortalUrl": ""
   }
 }

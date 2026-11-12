@@ -1,0 +1,650 @@
+/* Client area styles. Loaded only by /clients. Uses the site's tokens, type and focus rings.
+   global.css comes in through this file (not through the page), so the public pages share no
+   style chunk with this page and their bundled CSS stays exactly as it was. */
+@import './global.css';
+
+/* Google Sans Medium, only the letters of "Continue with Google", for Google's sign-in button
+   (Google's branding rules ask for it). SIL Open Font License, see src/fonts/OFL-google-sans.txt. */
+@font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/google-sans-500-continue-with-google.woff2') format('woff2');
+}
+
+.js-only {
+  display: none;
+}
+.js .js-only {
+  display: grid;
+}
+
+/* ---------- Header: logo, client name, Sign out ---------- */
+.client-header {
+  padding-block: var(--s-2);
+}
+.client-header .bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+}
+.client-header .logo {
+  display: flex;
+  align-items: center;
+  flex: none;
+  min-height: var(--tap);
+  border-radius: 2px;
+}
+.client-header .logo img {
+  width: auto;
+  height: 1.875rem;
+}
+/* On a phone: logo and Sign out on the first line, the client's full name on the next.
+   From 30em up, all three share one line. */
+.client-name {
+  order: 3;
+  flex: 1 0 100%;
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.client-name:empty {
+  display: none;
+}
+@media (min-width: 30em) {
+  .client-name {
+    order: 0;
+    flex: 1 1 0;
+  }
+}
+.admin-badge {
+  order: 4;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--charcoal);
+  border-radius: 2px;
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+@media (min-width: 30em) {
+  .admin-badge {
+    order: 0;
+  }
+}
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin-inline-start: auto;
+  padding: 0 var(--s-2);
+  border: 0;
+  border-radius: var(--radius-button);
+  background: none;
+  font-size: var(--fs-16);
+  font-weight: 600;
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .text-button:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---------- Section bar: like the sheet tab bar ---------- */
+.sections {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--cell);
+}
+/* Five tabs do not fit a phone. The row scrolls sideways under the page edges, snaps to a
+   tab, fades at an edge with more tabs past it, and keeps the chosen tab in view. */
+.sections ul {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter);
+  list-style: none;
+  scroll-padding-inline: var(--gutter);
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.sections ul::-webkit-scrollbar {
+  display: none;
+}
+.sections li {
+  flex: none;
+  scroll-snap-align: start;
+}
+.sections ul.more-right {
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+}
+.sections ul.more-left {
+  mask-image: linear-gradient(to right, transparent, #000 2.5rem);
+}
+.sections ul.more-left.more-right {
+  mask-image: linear-gradient(to right, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+}
+@media (min-width: 40em) {
+  .sections ul {
+    margin: 0;
+    padding: 0;
+  }
+}
+.sections a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border-right: 1px solid var(--line);
+  color: var(--charcoal);
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sections li:first-child a {
+  border-left: 1px solid var(--line);
+}
+@media (min-width: 30em) {
+  .sections a {
+    padding: 0 var(--s-4);
+  }
+}
+/* The tab bar scrolls sideways on narrow screens, which would clip a ring drawn outside the
+   tab, so the ring sits just inside it. */
+.sections a:focus-visible {
+  outline-offset: -5px;
+}
+.sections a[aria-current='page'] {
+  background: var(--chalk);
+  font-weight: 700;
+}
+.sections a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  background: var(--charcoal);
+}
+@media (hover: hover) {
+  .sections a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---------- Page body ---------- */
+.view {
+  padding-block: var(--s-6) var(--s-9);
+}
+.view-body {
+  display: grid;
+  gap: var(--s-5);
+  max-width: 52rem;
+}
+.view-body h1 {
+  font-size: var(--fs-48);
+}
+.view-body h1:focus {
+  outline: none;
+}
+.view-body h2 {
+  font-size: var(--fs-36);
+}
+.view-body h3 {
+  margin-top: var(--s-4);
+  font-family: var(--font-text);
+  font-size: var(--fs-21);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.view-body h4 {
+  margin-top: var(--s-3);
+  font-family: var(--font-text);
+  font-size: var(--fs-18);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.view-body p {
+  max-width: var(--measure);
+}
+.block {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+.lede {
+  font-size: var(--fs-21);
+  line-height: 1.45;
+}
+.loading {
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.signed-in-as {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* The one most important fact on each screen, like the sample phones. */
+.view-body .strip {
+  max-width: none;
+}
+.strip a {
+  color: inherit;
+  font-weight: 700;
+}
+.strip {
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius-button);
+  background: var(--lime);
+  font-size: var(--fs-18);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.notice {
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--charcoal);
+  background: var(--cell);
+}
+.proposed {
+  color: var(--moss);
+  font-weight: 600;
+}
+.muted-note {
+  font-style: italic;
+}
+
+/* Email link form */
+.email-form {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 26rem;
+}
+.email-form label {
+  font-weight: 600;
+}
+.email-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius-button);
+  background: var(--chalk);
+  font: inherit;
+}
+.email-form .btn {
+  justify-self: start;
+}
+
+/* Chooser */
+.chooser {
+  display: grid;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.chooser a {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--charcoal);
+  font-size: var(--fs-21);
+  font-weight: 600;
+}
+
+/* ---------- Sheets: the same look as the What we build table ---------- */
+.sheet-list {
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--chalk);
+}
+.sheet-list > div {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3) var(--s-4);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.sheet-list dt {
+  font-weight: 700;
+}
+.sheet-list .planned {
+  display: block;
+  font-weight: 600;
+}
+.sheet-list .note {
+  display: block;
+}
+@media (min-width: 40em) {
+  .sheet-list > div {
+    grid-template-columns: minmax(10rem, 1fr) 2fr;
+    gap: var(--s-4);
+  }
+}
+
+.sheet-scroll {
+  position: relative;
+  overflow-x: auto;
+  border-radius: 2px;
+}
+.scroll-hint {
+  display: none;
+  font-size: var(--fs-16);
+}
+.scroll-hint.show {
+  display: block;
+}
+/* Separate borders (drawn right and bottom on each cell) so the frozen first column of the
+   five-year table keeps its own border and background while the rest scrolls under it. */
+.sheet {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--chalk);
+  font-size: var(--fs-16);
+  line-height: 1.35;
+}
+.sheet th,
+.sheet td {
+  padding: var(--s-2) var(--s-2);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-weight: 400;
+  vertical-align: top;
+}
+@media (min-width: 30em) {
+  .sheet th,
+  .sheet td {
+    padding-inline: var(--s-3);
+  }
+}
+.sheet thead th {
+  background: var(--cell);
+  font-weight: 700;
+}
+.sheet tfoot th,
+.sheet tfoot td {
+  font-weight: 700;
+}
+.sheet .muted {
+  color: var(--muted);
+}
+.sheet .num {
+  text-align: right;
+  white-space: nowrap;
+}
+.sheet tr.check-in th,
+.sheet tr.check-in td {
+  border-top: 2px solid var(--charcoal);
+  font-weight: 600;
+}
+@media (min-width: 30em) {
+  .sheet-scroll.wide .sheet {
+    min-width: 40rem;
+  }
+}
+/* Keep the row names in view while the five-year table scrolls sideways. */
+.sheet-scroll.wide th[scope='row'] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 10rem;
+  background: var(--chalk);
+}
+.sheet-scroll.wide thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+@media (min-width: 30em) {
+  .sheet-scroll.wide th[scope='row'] {
+    min-width: 11rem;
+  }
+}
+.sheet-scroll.wide tfoot th[scope='row'] {
+  background: var(--cell);
+}
+.build-log {
+  display: grid;
+  gap: var(--s-3);
+}
+.check-in-note {
+  font-weight: 600;
+}
+
+@media (min-width: 48em) {
+  .client-header {
+    padding-block: var(--s-3);
+  }
+  .client-header .logo img {
+    height: 2.25rem;
+  }
+  .view-body h1 {
+    font-size: var(--fs-72);
+  }
+  .view {
+    padding-top: var(--s-7);
+  }
+}
+@media (min-width: 64em) {
+  .view-body {
+    grid-column: 2 / span 10;
+  }
+}
+
+/* ---------- Sign in with Google: Google's branding rules, light theme ---------- */
+/* White fill, 1 px #747775 border inside, #1F1F1F text in Google Sans Medium 14/20,
+   12 px before the G, 10 px between the G and the words, 12 px after them. The G is the
+   official mark at its own size; only the height grows, to the site's 44 px tap size. */
+.gsi-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap);
+  padding: 0 12px;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+}
+.gsi-mark {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+@media (hover: hover) {
+  .gsi-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 1px 2px rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+  }
+}
+.trouble {
+  font-size: var(--fs-16);
+}
+.in-app {
+  display: grid;
+  gap: var(--s-3);
+}
+.copy-fallback {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius-button);
+  background: var(--chalk);
+  font: inherit;
+}
+
+/* ---------- Documents and invoices: one row per item, in the sheet style ---------- */
+.item-list {
+  display: grid;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.item-list > li {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--line);
+}
+.item-list > li:focus {
+  outline: none;
+}
+.item-list > li.is-target {
+  margin-inline: calc(-1 * var(--s-3));
+  padding-inline: var(--s-3);
+  border-left: 3px solid var(--charcoal);
+  background: var(--cell);
+}
+.view-body .item-list h2 {
+  font-family: var(--font-text);
+  font-size: var(--fs-21);
+  font-weight: 700;
+  line-height: 1.3;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-2);
+}
+.status {
+  display: inline-block;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--charcoal);
+  border-radius: 2px;
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+.status--due {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+.status--void {
+  color: var(--muted);
+  border-color: var(--muted);
+  text-decoration: line-through;
+}
+.amount {
+  font-size: var(--fs-24);
+  font-weight: 700;
+}
+.item-list .actions {
+  margin-top: var(--s-1);
+}
+
+/* ---------- Account form ---------- */
+.account-form {
+  display: grid;
+  gap: var(--s-5);
+  max-width: 34rem;
+}
+.field {
+  display: grid;
+  gap: var(--s-1);
+}
+.field label,
+.account-form legend {
+  font-weight: 600;
+}
+.account-form input[type='text'],
+.account-form input[type='email'],
+.account-form input[type='tel'] {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius-button);
+  background: #fff;
+  font: inherit;
+}
+/* A field's problem: a line of text under it, in the site's notice style (a Charcoal bar),
+   so it never depends on colour. Empty, it takes no room but stays ready to be announced. */
+.field-problem {
+  padding-left: var(--s-2);
+  border-left: 3px solid var(--charcoal);
+  font-size: var(--fs-16);
+  font-weight: 600;
+}
+.field-problem:empty {
+  padding: 0;
+  border: 0;
+}
+.account-form input[aria-invalid='true'] {
+  border-width: 3px;
+}
+.account-form fieldset {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.account-form legend {
+  margin-bottom: var(--s-2);
+  padding: 0;
+  font-size: var(--fs-21);
+}
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--tap);
+}
+.choice input {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  accent-color: var(--charcoal);
+}
+.choice label {
+  flex: 1;
+  padding-block: var(--s-2);
+  cursor: pointer;
+}
+.account-form .actions {
+  align-items: center;
+}
+
+/* ---------- Footer: slim, on every client page ---------- */
+.client-footer {
+  border-top: 1px solid var(--line);
+  background: var(--cell);
+}
+.client-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-5);
+  padding: var(--s-2) 0;
+  list-style: none;
+}
+.client-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--charcoal);
+  font-size: var(--fs-16);
+}

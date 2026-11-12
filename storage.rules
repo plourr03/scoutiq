@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// ScoutIQ client area documents.
+// Files live at clients/{clientId}/... and follow the same member rule as the database:
+// a signed-in person with a verified email listed under that client, or the admin.
+// No browser can upload, change or delete a file; the admin import script does that.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // A verified address with nothing odd in it (no spaces, no slashes), so it is safe to use
+    // as part of a database path.
+    function hasVerifiedEmail() {
+      return signedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.matches('[^/\\s]+@[^/\\s]+');
+    }
+
+    function isAdmin() {
+      return hasVerifiedEmail() && request.auth.token.get('admin', false) == true;
+    }
+
+    function isMember(clientId) {
+      return hasVerifiedEmail()
+        && firestore.exists(/databases/(default)/documents/clients/$(clientId)/members/$(request.auth.token.email.lower()));
+    }
+
+    // The file really sits in this client's folder: its full name starts there and has no
+    // "." or ".." parts that could step into another client's folder.
+    function insideClient(clientId) {
+      return resource.name.matches('clients/' + clientId + '/.+')
+        && !resource.name.matches('(.*/)?[.]{1,2}(/.*)?');
+    }
+
+    // One file at a time, by its exact name. Nobody lists folders or writes from a browser.
+    match /clients/{clientId}/{allPaths=**} {
+      allow get: if (isAdmin() || isMember(clientId)) && insideClient(clientId);
+      allow list, write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

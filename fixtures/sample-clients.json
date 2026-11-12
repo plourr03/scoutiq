@@ -1,0 +1,381 @@
+{
+  "_about": "Made-up clients for the emulators, tests and screenshots. Every name, address and number here is invented. Real client data never goes in this repository.",
+  "admins": [
+    "admin@scoutiq.test"
+  ],
+  "clients": [
+    {
+      "id": "sample-club",
+      "members": [
+        "member@sample-club.test",
+        "coach@sample-club.test",
+        "both@clubs.test"
+      ],
+      "client": {
+        "name": "Sample Club",
+        "projectName": "Sample Club website and app",
+        "statusLine": "Design is done and the pages are going up. Registration is next.",
+        "liveSite": {
+          "url": "https://example.com/",
+          "label": "example.com"
+        },
+        "goals": [
+          {
+            "label": "Site launch",
+            "when": "Early 2027"
+          },
+          {
+            "label": "Online registration",
+            "when": "Before the first event"
+          },
+          {
+            "label": "Member app",
+            "when": "Summer 2028"
+          }
+        ],
+        "agreement": {
+          "signed": false,
+          "sentOn": "2026-10-05",
+          "signedOn": null,
+          "documentId": "website-agreement"
+        },
+        "contact": {
+          "email": "hello@scoutiq.test",
+          "phone": "555-0100"
+        },
+        "invoicesEmptyMessage": "Nothing billed so far. The first invoice comes after the 2028 season."
+      },
+      "costs": {
+        "maintenance": {
+          "freeThroughSeason": 2028,
+          "ratePerTournamentCents": 2500,
+          "rateLockedThrough": 2030,
+          "exampleSeason": 2028,
+          "seasons": [
+            {
+              "year": 2028,
+              "tournaments": 6
+            },
+            {
+              "year": 2029,
+              "tournaments": null
+            },
+            {
+              "year": 2030,
+              "tournaments": null
+            },
+            {
+              "year": 2031,
+              "tournaments": null
+            },
+            {
+              "year": 2032,
+              "tournaments": null
+            }
+          ],
+          "countNote": "The 2028 count is the six events planned so far."
+        },
+        "appTools": {
+          "annualShareCents": 2500,
+          "buildRateMillsPerMinute": 85,
+          "checkInCents": 8000,
+          "notes": [
+            "Listing the app on Android costs you nothing."
+          ]
+        },
+        "estimate": {
+          "years": [
+            2028,
+            2029,
+            2030,
+            2031,
+            2032
+          ],
+          "note": "We rounded these up, so actual bills should land below them.",
+          "totalLabel": "Planning total",
+          "rows": [
+            {
+              "label": "Upkeep (ScoutIQ)",
+              "payer": "scoutiq",
+              "cents": [
+                0,
+                15000,
+                15000,
+                15000,
+                15000
+              ]
+            },
+            {
+              "label": "App store accounts and tools (ScoutIQ)",
+              "payer": "scoutiq",
+              "cents": [
+                6000,
+                4500,
+                4500,
+                4500,
+                4500
+              ]
+            },
+            {
+              "label": "Servers and data (paid direct)",
+              "payer": "direct",
+              "name": "Servers and data",
+              "note": "Pennies a month today. The figure leaves room for the club to double.",
+              "cents": [
+                3000,
+                4000,
+                5000,
+                6000,
+                7000
+              ]
+            },
+            {
+              "label": "Web address (paid direct)",
+              "payer": "direct",
+              "name": "Web address",
+              "note": "Renewed each year and registered to the club.",
+              "cents": [
+                2000,
+                2000,
+                2000,
+                2000,
+                2000
+              ]
+            },
+            {
+              "label": "Text message reminders (paid direct)",
+              "payer": "direct",
+              "name": "Text message reminders",
+              "note": "About a cent a message, for game day reminders.",
+              "cents": [
+                3000,
+                3000,
+                3000,
+                3000,
+                3000
+              ]
+            },
+            {
+              "label": "Site and app build",
+              "payer": "none",
+              "cents": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "realistic": {
+            "label": "Likely total at current size",
+            "cents": [
+              7000,
+              23000,
+              23000,
+              23000,
+              23000
+            ]
+          }
+        }
+      },
+      "buildLog": [
+        {
+          "id": "b1",
+          "date": "2028-02-10",
+          "what": "First test build",
+          "minutes": 42
+        },
+        {
+          "id": "b2",
+          "date": "2028-03-15",
+          "what": "App store release",
+          "minutes": 58
+        },
+        {
+          "id": "b3",
+          "date": "2028-05-02",
+          "what": "Live scores update",
+          "minutes": 37
+        }
+      ],
+      "account": {
+        "billingName": "Sample Club",
+        "contactName": "Jamie Rivera",
+        "email": "member@sample-club.test",
+        "phone": "555-0142",
+        "mailingAddress": {
+          "line1": "100 Example Street",
+          "line2": "",
+          "city": "Sampletown",
+          "state": "WI",
+          "postalCode": "00000"
+        },
+        "preferences": {
+          "appToolsInvoice": "after-season",
+          "appToolsNote": "",
+          "payBy": "online",
+          "payNote": ""
+        }
+      },
+      "documents": [
+        {
+          "id": "cost-estimate",
+          "title": "Five-year cost estimate",
+          "kind": "estimate",
+          "date": "2026-10-05",
+          "status": "final",
+          "url": "https://example.com/sample-club/cost-estimate.pdf"
+        },
+        {
+          "id": "website-agreement",
+          "title": "Website and app agreement",
+          "kind": "agreement",
+          "date": "2026-10-05",
+          "status": "draft",
+          "url": "https://example.com/sample-club/agreement.pdf"
+        },
+        {
+          "id": "club-colors",
+          "title": "Club colors and logo files",
+          "kind": "other",
+          "date": "2026-09-20",
+          "status": "final",
+          "file": "files/sample-club/club-colors.pdf"
+        }
+      ],
+      "invoices": [
+        {
+          "id": "sc-1002",
+          "number": "SC-1002",
+          "date": "2028-10-01",
+          "covers": "Build time, 2028 season (137 minutes)",
+          "amountCents": 1165,
+          "status": "due",
+          "url": "https://invoice.stripe.com/i/sample-club-1002"
+        },
+        {
+          "id": "sc-1001",
+          "number": "SC-1001",
+          "date": "2028-01-15",
+          "covers": "Apple developer account share, 2028",
+          "amountCents": 2500,
+          "status": "paid",
+          "url": "https://invoice.stripe.com/i/sample-club-1001"
+        }
+      ]
+    },
+    {
+      "id": "other-club",
+      "members": [
+        "member@other-club.test",
+        "both@clubs.test"
+      ],
+      "client": {
+        "name": "Other Club",
+        "projectName": "Other Club booking site",
+        "statusLine": "Planning.",
+        "liveSite": {
+          "url": "https://example.org/",
+          "label": "example.org"
+        },
+        "goals": [
+          {
+            "label": "Booking site live",
+            "when": "Spring 2027"
+          }
+        ],
+        "agreement": {
+          "signed": true,
+          "sentOn": "2026-09-01",
+          "signedOn": "2026-09-20"
+        },
+        "contact": {
+          "email": "hello@scoutiq.test",
+          "phone": ""
+        },
+        "invoicesEmptyMessage": "No invoices yet."
+      },
+      "costs": {
+        "maintenance": {
+          "freeThroughSeason": 2026,
+          "ratePerTournamentCents": 4000,
+          "rateLockedThrough": 2029,
+          "exampleSeason": 2027,
+          "seasons": [
+            {
+              "year": 2027,
+              "tournaments": 4
+            },
+            {
+              "year": 2028,
+              "tournaments": 5
+            }
+          ]
+        },
+        "appTools": {
+          "annualShareCents": 0,
+          "buildRateMillsPerMinute": 85,
+          "checkInCents": 5000,
+          "notes": []
+        },
+        "estimate": {
+          "years": [
+            2027,
+            2028
+          ],
+          "note": "Made-up numbers for testing.",
+          "totalLabel": "Planning total",
+          "rows": [
+            {
+              "label": "Upkeep (ScoutIQ)",
+              "payer": "scoutiq",
+              "cents": [
+                16000,
+                20000
+              ]
+            }
+          ],
+          "realistic": {
+            "label": "Likely total at current size",
+            "cents": [
+              16000,
+              20000
+            ]
+          }
+        }
+      },
+      "buildLog": [],
+      "account": {
+        "billingName": "Other Club",
+        "contactName": "Sam Lee",
+        "email": "member@other-club.test",
+        "phone": "",
+        "mailingAddress": {
+          "line1": "",
+          "line2": "",
+          "city": "",
+          "state": "",
+          "postalCode": ""
+        },
+        "preferences": {
+          "appToolsInvoice": "with-maintenance",
+          "appToolsNote": "",
+          "payBy": "check",
+          "payNote": ""
+        }
+      },
+      "documents": [
+        {
+          "id": "booking-plan",
+          "title": "Booking site plan",
+          "kind": "other",
+          "date": "2026-09-01",
+          "status": "final",
+          "url": "https://example.org/other-club/plan.pdf"
+        }
+      ],
+      "invoices": []
+    }
+  ]
+}

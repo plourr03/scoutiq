@@ -1,0 +1,2 @@
+# Document files are binary, whatever bytes they hold: never change their line endings.
+*.pdf binary

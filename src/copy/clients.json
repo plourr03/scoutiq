@@ -1,0 +1,183 @@
+{
+  "titleSuffix": "ScoutIQ",
+  "noscript": "This area needs JavaScript. Turn it on in your browser to sign in.",
+  "loading": "Loading",
+  "loadError": "Something went wrong loading this page. Please reload it.",
+  "header": {
+    "logoLabel": "ScoutIQ client area",
+    "signOut": "Sign out",
+    "adminBadge": "Admin view"
+  },
+  "signIn": {
+    "title": "Client sign in",
+    "heading": "Client sign in",
+    "intro": "For ScoutIQ clients. Sign in with the email address we have on file for you.",
+    "google": "Continue with Google",
+    "emailLabel": "Email address",
+    "emailButton": "Email me a sign-in link",
+    "sentHeading": "Check your email",
+    "sentBody": "We sent a sign-in link to that address. Open it on this device.",
+    "confirmLabel": "Your email address",
+    "confirmButton": "Finish signing in",
+    "inAppBrowser": "Google sign-in does not work inside this app's own browser. Open this page in Safari or Chrome to sign in.",
+    "error": "Sign-in did not finish. Please try again.",
+    "trouble": "Trouble signing in? [Email us].",
+    "copyLink": "Copy link",
+    "copied": "Copied"
+  },
+  "notLinked": {
+    "heading": "This account is not linked to a client yet",
+    "body": "If you expected to see your project here, email us and we will sort it out.",
+    "signedInAs": "Signed in as {email}",
+    "emailButton": "Email us",
+    "signOut": "Sign out"
+  },
+  "chooser": {
+    "heading": "Choose a client",
+    "adminNote": "You are signed in as admin. Each client's area looks just as it does to them, and it is read only."
+  },
+  "sections": {
+    "label": "Sections",
+    "overview": "Overview",
+    "costs": "Costs",
+    "documents": "Documents",
+    "invoices": "Invoices",
+    "account": "Account"
+  },
+  "proposed": "Proposed, pending signed agreement",
+  "overview": {
+    "status": "Where it stands",
+    "liveSite": "Live site",
+    "goals": "Goals",
+    "goalsNote": "These dates are goals, not guarantees.",
+    "agreementDraft": "[Agreement draft] sent for your review on {date}. Not signed yet.",
+    "agreementSigned": "[Agreement] signed on {date}.",
+    "agreementNone": "No agreement yet.",
+    "reach": "How to reach us",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "costs": {
+    "strip": "Maintenance and support are free through the {season} season.",
+    "billsYou": "What ScoutIQ bills you",
+    "providers": "What you pay providers directly",
+    "estimate": "Five-year estimate",
+    "maintenance": {
+      "heading": "Maintenance and support",
+      "terms": "Free through the {free} season. From {from}, {rate} per tournament, billed once a year before the season. The rate is locked through {locked}. A tournament counts once, however many days it runs.",
+      "season": "Season",
+      "tournaments": "Tournaments",
+      "math": "Math",
+      "amount": "Amount",
+      "free": "Free",
+      "notSet": "Not set yet",
+      "example": "A year like {season} would be {count} x {rate} = {total}.",
+      "rateEach": "{rate} each",
+      "setWithSchedule": "Set with the schedule"
+    },
+    "appTools": {
+      "heading": "App development tools and accounts",
+      "share": "{amount} a year: your share of the ScoutIQ Apple developer account your app is listed under.",
+      "buildTime": "Plus Mac build time at {hourly} an hour, billed by the minute for the minutes actually used.",
+      "logHeading": "Build log {year}",
+      "date": "Date",
+      "what": "What was built",
+      "minutes": "Minutes",
+      "cost": "Cost",
+      "total": "Total for {year}",
+      "checkIn": "Check-in point",
+      "checkInNote": "We check with you before build time passes {amount} in a year.",
+      "noBuilds": "No build time used yet."
+    },
+    "providersNote": "Each provider bills you directly, at cost. ScoutIQ adds nothing.",
+    "planned": "Planned at {amount} a year",
+    "plannedRange": "Planned at {low} to {high} a year",
+    "estimateItem": "Item",
+    "estimateYears": "5 years",
+    "scrollHint": "Swipe or scroll sideways to see the whole table."
+  },
+  "footer": {
+    "label": "ScoutIQ",
+    "home": "scout-iq.com"
+  },
+  "documents": {
+    "empty": "No documents yet.",
+    "kinds": {
+      "estimate": "Estimate",
+      "agreement": "Agreement",
+      "other": "Other"
+    },
+    "statuses": {
+      "draft": "Draft for review",
+      "final": "Final",
+      "signed": "Signed"
+    },
+    "view": "View",
+    "download": "Download",
+    "newTab": "(opens in a new tab)",
+    "notOnline": "Not available online yet. [Email us] for a copy.",
+    "fileError": "That file did not open. Please try again."
+  },
+  "invoices": {
+    "number": "Invoice {number}",
+    "statuses": {
+      "due": "Due",
+      "paid": "Paid",
+      "void": "Void"
+    },
+    "viewAndPay": "View and pay",
+    "view": "View",
+    "portal": "View and pay invoices",
+    "dueStrip": "{amount} is due.",
+    "nothingDue": "Nothing is due right now.",
+    "defaultEmpty": "No invoices yet.",
+    "amount": "Amount"
+  },
+  "account": {
+    "lede": "Keep these up to date so invoices reach the right person.",
+    "billingName": "Billing name",
+    "contactName": "Contact name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Mailing address",
+    "line1": "Street address",
+    "line2": "Second line (optional)",
+    "city": "City",
+    "state": "State",
+    "postalCode": "ZIP code",
+    "appToolsInvoice": "When do you want the app tools invoice?",
+    "appToolsOptions": {
+      "after-season": "After the season",
+      "with-maintenance": "With the maintenance invoice",
+      "other": "Other"
+    },
+    "payBy": "How do you prefer to pay?",
+    "payOptions": {
+      "online": "Card or bank, online",
+      "check": "Check",
+      "other": "Other"
+    },
+    "note": "Tell us more",
+    "save": "Save changes",
+    "saving": "Saving",
+    "saved": "Saved",
+    "saveError": "That did not save. Please check your connection and try again.",
+    "readOnly": "Read only. Only the client can change these details.",
+    "notChosen": "Not chosen yet",
+    "blank": "(blank)",
+    "changes": "Change record",
+    "noChanges": "No changes yet.",
+    "changeBy": "{when} by {who}",
+    "changeLine": "{field}: {from} to {to}",
+    "labels": {
+      "appToolsInvoice": "App tools invoice timing",
+      "appToolsNote": "App tools invoice note",
+      "payBy": "Preferred way to pay",
+      "payNote": "Payment note"
+    },
+    "noCardNumbers": "Please leave out card and bank numbers. We never need them here.",
+    "phoneFormat": "Use only digits, spaces and + ( ) . - in the phone number.",
+    "emailFormat": "Enter a whole email address, like name@example.com.",
+    "required": "Please fill this in."
+  }
+}

@@ -1,0 +1,91 @@
+---
+// The client area shell. One page serves every /clients address (see the rewrites in
+// firebase.json); its script picks the screen. Nothing on the public pages loads this script.
+import { Picture } from 'astro:assets';
+// clients.css pulls in its own copy of global.css, so the public pages' bundled styles stay
+// byte for byte what they were before the client area existed.
+import '../styles/clients.css';
+import leagueGothic from '../fonts/league-gothic-latin-400-normal.woff2?url';
+import franklin400 from '../fonts/libre-franklin-latin-400-normal.woff2?url';
+import franklin600 from '../fonts/libre-franklin-latin-600-normal.woff2?url';
+import googleSans from '../fonts/google-sans-500-continue-with-google.woff2?url';
+import logo from '../assets/logo/scoutiq-logo-horizontal-light.png';
+import site from '../copy/site.json';
+import copy from '../copy/clients.json';
+import settings from '../settings.json';
+
+const logoHeight = 36;
+const logoWidth = Math.round((logo.width / logo.height) * logoHeight);
+const clientSettings = {
+  contactEmail: settings.contactEmail,
+  contactSubject: settings.contactSubject,
+  emailLinkSignIn: settings.clientArea.emailLinkSignIn,
+  fileStorage: settings.clientArea.fileStorage,
+  stripePortalUrl: settings.clientArea.stripePortalUrl,
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{copy.signIn.title} | {copy.titleSuffix}</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="same-origin" />
+    <meta name="theme-color" content="#fafbf7" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={leagueGothic} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={franklin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={franklin600} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={googleSans} as="font" type="font/woff2" crossorigin />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body class="client-area">
+    <a class="skip-link" href="#main">{site.skipLink}</a>
+    <header class="client-header page-grid">
+      <div class="bar">
+        <a class="logo" href="/clients" data-nav aria-label={copy.header.logoLabel}>
+          <Picture
+            src={logo}
+            alt=""
+            width={logoWidth}
+            height={logoHeight}
+            densities={[1, 2]}
+            formats={['avif', 'webp']}
+            fallbackFormat="png"
+            loading="eager"
+          />
+        </a>
+        <p class="client-name" id="client-name"></p>
+        <p class="admin-badge" id="admin-badge" hidden></p>
+        <button type="button" class="text-button" id="sign-out" hidden>{copy.header.signOut}</button>
+      </div>
+    </header>
+    <nav class="sections" id="sections" aria-label={copy.sections.label} hidden>
+      <div class="page-grid"><ul></ul></div>
+    </nav>
+    <main id="main" tabindex="-1">
+      <noscript>
+        <div class="page-grid view"><div class="view-body"><p class="lede">{copy.noscript}</p></div></div>
+      </noscript>
+      <div class="page-grid view js-only"><div class="view-body"><p class="loading" role="status">{copy.loading}</p></div></div>
+    </main>
+    <footer class="client-footer">
+      <div class="page-grid">
+        <ul>
+          <li><a href="/privacy">{site.footer.privacy}</a></li>
+          <li><a href="/terms">{site.footer.terms}</a></li>
+          <li><a href="/">{copy.footer.home}</a></li>
+        </ul>
+      </div>
+    </footer>
+    <script type="application/json" is:inline id="client-copy" set:html={JSON.stringify(copy)} />
+    <script type="application/json" is:inline id="client-settings" set:html={JSON.stringify(clientSettings)} />
+    <script>
+      import '../scripts/clients/app.js';
+    </script>
+  </body>
+</html>

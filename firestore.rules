@@ -1,0 +1,222 @@
+rules_version = '2';
+
+// ScoutIQ client area.
+//
+// Everything is denied unless a rule below allows it.
+// A member is a signed-in person with a verified email whose lowercase address has an entry
+// under clients/{clientId}/members/{email}. Member entries are written only by the admin
+// import script, which stores every address in lowercase and refuses any that is not.
+// The admin is a person with a verified email and the custom claim admin == true, set only by
+// the admin script.
+// No browser can write client data. The one exception is a member editing their own
+// account details, which must be saved together with a change record.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasVerifiedEmail() {
+      return signedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email_verified == true;
+    }
+
+    // The signed-in address, lowercase.
+    function myEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function isAdmin() {
+      return hasVerifiedEmail() && request.auth.token.get('admin', false) == true;
+    }
+
+    function memberPath(clientId) {
+      return /databases/$(database)/documents/clients/$(clientId)/members/$(myEmail());
+    }
+
+    function isMember(clientId) {
+      return hasVerifiedEmail() && exists(memberPath(clientId));
+    }
+
+    function canRead(clientId) {
+      return isAdmin() || isMember(clientId);
+    }
+
+    // ---------- Clients and everything under them ----------
+    match /clients/{clientId} {
+      allow get: if canRead(clientId);
+      allow list: if isAdmin();
+      allow write: if false;
+
+      // The member list. A member may read their own entry; only the admin may list.
+      match /members/{email} {
+        allow get: if isAdmin() || (hasVerifiedEmail() && email.lower() == myEmail());
+        allow list: if isAdmin();
+        allow write: if false;
+      }
+
+      // Overview and cost data, build log, documents and invoices: read only.
+      match /data/{docId} {
+        allow read: if canRead(clientId);
+        allow write: if false;
+      }
+      match /buildLog/{entryId} {
+        allow read: if canRead(clientId);
+        allow write: if false;
+      }
+      match /documents/{docId} {
+        allow read: if canRead(clientId);
+        allow write: if false;
+      }
+      match /invoices/{invoiceId} {
+        allow read: if canRead(clientId);
+        allow write: if false;
+      }
+
+      // Account details: the one thing a member may change, and only these fields.
+      match /account/{docId} {
+        allow read: if canRead(clientId);
+        allow create, delete: if false;
+        allow update: if docId == 'details'
+          && isMember(clientId)
+          && validAccount(request.resource.data)
+          && request.resource.data.updatedBy == myEmail()
+          && request.resource.data.updatedAt == request.time
+          && changeRecordedWith(clientId, request.resource.data.lastChangeId);
+      }
+
+      // The record of account changes. Members add to it with each save; only the admin reads it.
+      // It must tell the truth: it lists exactly the fields this save changes, each with its old
+      // and new value, and it can only be written together with that save.
+      match /accountChanges/{changeId} {
+        allow read: if isAdmin();
+        allow update, delete: if false;
+        allow create: if isMember(clientId)
+          && request.resource.data.keys().hasOnly(['by', 'at', 'changes'])
+          && request.resource.data.by == myEmail()
+          && request.resource.data.at == request.time
+          && truthfulChanges(clientId, changeId, request.resource.data.changes);
+      }
+    }
+
+    // The client chooser asks for the member entries that carry the signed-in address.
+    // Both sides are compared in lowercase.
+    match /{path=**}/members/{email} {
+      allow list: if isAdmin()
+        || (hasVerifiedEmail() && resource.data.email.lower() == myEmail());
+    }
+
+    // ---------- Account validation ----------
+    function shortText(value, max) {
+      return value is string && value.size() <= max;
+    }
+
+    // Card and bank numbers do not belong anywhere in here: no run of 13 or more digits, even
+    // with spaces, dots or hyphens between them.
+    function plainText(value, max) {
+      return shortText(value, max) && !value.matches('.*([0-9][ .-]?){12}[0-9].*');
+    }
+
+    function validAddress(a) {
+      return a is map
+        && a.keys().hasOnly(['line1', 'line2', 'city', 'state', 'postalCode'])
+        && plainText(a.get('line1', ''), 120)
+        && plainText(a.get('line2', ''), 120)
+        && plainText(a.get('city', ''), 80)
+        && plainText(a.get('state', ''), 40)
+        && plainText(a.get('postalCode', ''), 20);
+    }
+
+    function validPreferences(p) {
+      return p is map
+        && p.keys().hasOnly(['appToolsInvoice', 'appToolsNote', 'payBy', 'payNote'])
+        // '' means the client has not chosen yet.
+        && p.appToolsInvoice in ['', 'after-season', 'with-maintenance', 'other']
+        && p.payBy in ['', 'online', 'check', 'other']
+        && plainText(p.get('appToolsNote', ''), 500)
+        && plainText(p.get('payNote', ''), 500);
+    }
+
+    function validAccount(d) {
+      return d.keys().hasOnly([
+          'billingName', 'contactName', 'email', 'phone', 'mailingAddress', 'preferences',
+          'updatedBy', 'updatedAt', 'lastChangeId'
+        ])
+        && plainText(d.billingName, 120)
+        && plainText(d.contactName, 120)
+        && shortText(d.email, 254)
+        && d.email.matches('[^@\\s]+@[^@\\s]+[.][^@\\s]+')
+        && shortText(d.phone, 40)
+        && d.phone.matches('[0-9 ()+.-]*')
+        && d.phone.replace('[^0-9]', '').size() <= 15
+        && validAddress(d.mailingAddress)
+        && validPreferences(d.preferences)
+        && d.lastChangeId is string;
+    }
+
+    // The account fields by their own names (every name is different), for comparing a save
+    // with the change record.
+    function fieldsOf(d) {
+      let a = d.get('mailingAddress', {});
+      let p = d.get('preferences', {});
+      return {
+        'billingName': d.get('billingName', ''), 'contactName': d.get('contactName', ''),
+        'email': d.get('email', ''), 'phone': d.get('phone', ''),
+        'line1': a.get('line1', ''), 'line2': a.get('line2', ''), 'city': a.get('city', ''),
+        'state': a.get('state', ''), 'postalCode': a.get('postalCode', ''),
+        'appToolsInvoice': p.get('appToolsInvoice', ''), 'appToolsNote': p.get('appToolsNote', ''),
+        'payBy': p.get('payBy', ''), 'payNote': p.get('payNote', '')
+      };
+    }
+
+    // A field is in the record exactly when the save changes it, with its true old and new value.
+    function recorded(changes, key, before, after) {
+      return key in changes
+        ? changes[key] is map
+          && changes[key].keys().hasOnly(['from', 'to'])
+          && changes[key].get('from', null) == before[key]
+          && changes[key].get('to', null) == after[key]
+          && before[key] != after[key]
+        : before[key] == after[key];
+    }
+
+    function truthfulChanges(clientId, changeId, changes) {
+      let path = /databases/$(database)/documents/clients/$(clientId)/account/details;
+      let saved = getAfter(path).data;
+      let before = fieldsOf(get(path).data);
+      let after = fieldsOf(saved);
+      return changes is map
+        && changes.size() > 0
+        && changes.keys().hasOnly([
+          'billingName', 'contactName', 'email', 'phone', 'line1', 'line2', 'city', 'state',
+          'postalCode', 'appToolsInvoice', 'appToolsNote', 'payBy', 'payNote'
+        ])
+        // Written in this same request, by this same save.
+        && saved.lastChangeId == changeId
+        && saved.updatedAt == request.time
+        && recorded(changes, 'billingName', before, after)
+        && recorded(changes, 'contactName', before, after)
+        && recorded(changes, 'email', before, after)
+        && recorded(changes, 'phone', before, after)
+        && recorded(changes, 'line1', before, after)
+        && recorded(changes, 'line2', before, after)
+        && recorded(changes, 'city', before, after)
+        && recorded(changes, 'state', before, after)
+        && recorded(changes, 'postalCode', before, after)
+        && recorded(changes, 'appToolsInvoice', before, after)
+        && recorded(changes, 'appToolsNote', before, after)
+        && recorded(changes, 'payBy', before, after)
+        && recorded(changes, 'payNote', before, after);
+    }
+
+    // The account save must create its change record in the same write, made by the same person.
+    function changeRecordedWith(clientId, changeId) {
+      return existsAfter(/databases/$(database)/documents/clients/$(clientId)/accountChanges/$(changeId))
+        && !exists(/databases/$(database)/documents/clients/$(clientId)/accountChanges/$(changeId))
+        && getAfter(/databases/$(database)/documents/clients/$(clientId)/accountChanges/$(changeId)).data.by == myEmail();
+    }
+  }
+}
